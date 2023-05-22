@@ -43,7 +43,19 @@
         "view": "openproject-workspaces",
         "type": "webview",
         "contents": "Hello! To use OpenProject features you need to authorize:\n[Auth](command:openproject.auth)",
-        "when": "!openproject.authed"
+        "when": "!openproject.token"
+      }
+    ],
+    "configuration":[
+      {
+        "title": "OpenProject",
+        "properties": {
+          "openproject.token": {
+            "type": "string",
+            "default": null,
+            "description": "OpenProject API token"
+          }
+        }
       }
     ]
   },
