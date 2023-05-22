@@ -20,7 +20,6 @@ const extensionConfig = {
     vscode: 'commonjs vscode'
   },
   resolve: {
-  
     extensions: ['.ts', '.js']
   },
   module: {
@@ -33,6 +32,14 @@ const extensionConfig = {
             loader: 'ts-loader'
           }
         ]
+      },
+      {
+        test: /resources\/*/,
+        use: [
+          {
+            loader: 'file-loader'
+          }
+        ]
       }
     ]
   },
@@ -40,5 +47,16 @@ const extensionConfig = {
   infrastructureLogging: {
     level: "log",
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: ".",
+          to: "resources",
+          context: "resources"
+        }
+      ]
+    })
+  ]
 };
 module.exports = [ extensionConfig ];

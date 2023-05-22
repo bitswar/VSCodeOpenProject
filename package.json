@@ -14,8 +14,36 @@
   "contributes": {
     "commands": [
       {
-        "command": "openproject.helloWorld",
-        "title": "Hello World"
+        "command": "openproject.auth",
+        "title": "Authorize",
+        "shortTitle": "Auth"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "openproject",
+          "icon": "resources/icon.png",
+          "title": "OpenProject"
+        }
+      ]
+    },
+    "views": {
+      "openproject": [
+        {
+          "id": "openproject-workspaces",
+          "name": "Workspaces"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "id": "openproject-login",
+        "name": "Auth",
+        "view": "openproject-workspaces",
+        "type": "webview",
+        "contents": "Hello! To use OpenProject features you need to authorize:\n[Auth](command:openproject.auth)",
+        "when": "!openproject.authed"
       }
     ]
   },
