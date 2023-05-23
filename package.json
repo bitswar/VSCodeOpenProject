@@ -17,6 +17,11 @@
         "command": "openproject.auth",
         "title": "Authorize",
         "shortTitle": "Auth"
+      },
+      {
+        "command": "openproject.refresh",
+        "title": "Refresh work packages",
+        "shortTitle": "Refresh"
       }
     ],
     "viewsContainers": {
@@ -43,10 +48,10 @@
         "view": "openproject-workspaces",
         "type": "webview",
         "contents": "Hello! To use OpenProject features you need to authorize:\n[Auth](command:openproject.auth)",
-        "when": "!openproject.token"
+        "when": "!openproject.authed"
       }
     ],
-    "configuration":[
+    "configuration": [
       {
         "title": "OpenProject",
         "properties": {
@@ -54,6 +59,11 @@
             "type": "string",
             "default": null,
             "description": "OpenProject API token"
+          },
+          "openproject.base_url": {
+            "type": "string",
+            "default": "https://board.dipal-local.ru",
+            "description": "OpenProject base_url"
           }
         }
       }
@@ -67,22 +77,56 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "lint:fix": "eslint src --ext ts --fix",
+    "test": "jest"
   },
   "devDependencies": {
-    "@types/vscode": "^1.78.0",
+    "@faker-js/faker": "^8.0.1",
     "@types/glob": "^8.1.0",
+    "@types/jest": "^29.5.1",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@typescript-eslint/parser": "^5.59.1",
-    "eslint": "^8.39.0",
+    "@types/vscode": "^1.78.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
+    "@vscode/test-electron": "^2.3.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.41.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-airbnb": "^0.0.1-security",
+    "eslint-plugin-jsdoc": "^44.2.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-sonarjs": "^0.19.0",
     "glob": "^8.1.0",
+    "jest": "^29.5.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.0.4",
+    "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
     "webpack": "^5.81.0",
-    "webpack-cli": "^5.0.2",
-    "@vscode/test-electron": "^2.3.0"
+    "webpack-cli": "^5.0.2"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "client-oauth2": "^4.3.3",
+    "op-client": "^1.4.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage"
   }
 }
