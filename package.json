@@ -3,7 +3,8 @@
   "publisher": "bitswar",
   "displayName": "OpenProject",
   "description": "OpenProject extension for VSCode",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "icon": "pictures/icon.png",
   "engines": {
     "vscode": "^1.78.0"
   },
