@@ -8,3 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Initial release
+
+## [1.0.0] - 25-05-2023
+
+### Added
+- extension icon
+
+### Fixed
+- extension version
+- Readme image
