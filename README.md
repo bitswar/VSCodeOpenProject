@@ -1,11 +1,13 @@
 # openproject README
 
-Extension for [OpenProject](https://www.openproject.org/) - project management system.
+Extension for [OpenProject](https://www.openproject.org/) - project management system.  
+
+![picture](pictures/work_packages.png)
 
 ## Features
 
 - Authorization.
-- Getting list of your work packages. ![picture](https://github.com/bitswar/VSCodeOpenProject/pictures/work_packages.png)
+- Getting list of your work packages.
 
 ## Requirements
 
