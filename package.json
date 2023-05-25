@@ -1,5 +1,6 @@
 {
   "name": "openproject",
+  "publisher": "bitswar",
   "displayName": "OpenProject",
   "description": "OpenProject extension for VSCode",
   "version": "0.0.1",
