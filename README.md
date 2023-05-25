@@ -5,7 +5,7 @@ Extension for [OpenProject](https://www.openproject.org/) - project management s
 ## Features
 
 - Authorization.
-- Getting list of your work packages. ![picture](https://github.com/bitswar/VSCodeOpenProject/pictures/work_packages.png)
+- Getting list of your work packages. ![picture](pictures/work_packages.png)
 
 ## Requirements
 
