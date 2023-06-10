@@ -24,9 +24,22 @@
       {
         "command": "openproject.refresh",
         "title": "Refresh work packages",
-        "shortTitle": "Refresh"
+        "shortTitle": "Refresh",
+        "icon": {
+          "dark": "resources/refresh_light.png",
+          "light": "resources/refresh.png"
+        }
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "openproject.refresh",
+          "group": "navigation",
+          "when": "view == openproject-workspaces"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -89,10 +102,10 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
     "@types/vscode": "^1.78.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.7",
-    "@typescript-eslint/parser": "^5.59.7",
     "@vscode/test-electron": "^2.3.0",
     "copy-webpack-plugin": "^11.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
     "eslint": "^8.41.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
