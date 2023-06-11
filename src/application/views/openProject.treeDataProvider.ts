@@ -7,6 +7,7 @@ import TOKENS from "../../DI/tokens";
 import OpenProjectClient from "../../infrastructure/openProject/openProject.client";
 import getIconPathByStatus from "../../utils/getIconPathByStatus.util";
 import OpenProjectTreeDataProvider from "./openProjectTreeDataProvider.interface";
+import WPStatus from "../../infrastructure/openProject/wpStatus.enum";
 
 @injectable()
 export default class OpenProjectTreeDataProviderImpl
@@ -29,7 +30,7 @@ export default class OpenProjectTreeDataProviderImpl
     this._onDidChangeTreeData.event;
 
   getTreeItem(element: WP): TreeItem | Promise<TreeItem> {
-    const iconPath = getIconPathByStatus(element.status.self.title);
+    const iconPath = getIconPathByStatus(element.status.self.title as WPStatus);
     return {
       label: `#${element.id} ${element.subject}`,
       collapsibleState:
