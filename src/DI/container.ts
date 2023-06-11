@@ -45,6 +45,21 @@ container
   .inSingletonScope();
 
 container
+  .bind<TextWPsFilter>(TOKENS.textFilter)
+  .to(TextWPsFilterImpl)
+  .inSingletonScope();
+
+container
+  .bind<ProjectWPsFilter>(TOKENS.projectFilter)
+  .to(ProjectWPsFilterImpl)
+  .inSingletonScope();
+
+container
+  .bind<StatusWPsFilter>(TOKENS.statusFilter)
+  .to(StatusWPsFilterImpl)
+  .inSingletonScope();
+
+container
   .bind<WPRepository>(TOKENS.wpRepository)
   .to(WPRepositoryImpl)
   .inSingletonScope();
