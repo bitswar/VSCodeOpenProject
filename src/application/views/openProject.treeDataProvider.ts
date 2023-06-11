@@ -1,69 +1,71 @@
 import { inject, injectable } from "inversify";
-import { WP } from "op-client";
-import path from "path";
+import { Project, WP } from "op-client";
 import * as vscode from "vscode";
 import { Event, ProviderResult, TreeItem } from "vscode";
 import TOKENS from "../../DI/tokens";
-import OpenProjectClient from "../../infrastructure/openProject/openProject.client";
-import getIconPathByStatus from "../../utils/getIconPathByStatus.util";
+import OpenProjectClient from "../../infrastructure/openProject/openProject.client.interface";
+import ProjectRepository from "../../infrastructure/project/project.repository.interface";
+import WPRepository from "../../infrastructure/workPackage/wp.repository.interface";
 import OpenProjectTreeDataProvider from "./openProjectTreeDataProvider.interface";
-import WPStatus from "../../infrastructure/openProject/wpStatus.enum";
+import ProjectTreeItem from "./treeItems/project.treeItem";
+import WPTreeItem from "./treeItems/wp.treeItem";
 
 @injectable()
 export default class OpenProjectTreeDataProviderImpl
   implements OpenProjectTreeDataProvider
 {
+  private _onDidChangeTreeData: vscode.EventEmitter<void> =
+    new vscode.EventEmitter<void>();
+
+  onDidChangeTreeData: Event<void> = this._onDidChangeTreeData.event;
+
   constructor(
+    @inject(TOKENS.wpRepository)
+    private readonly _wpRepository: WPRepository,
+    @inject(TOKENS.projectRepository)
+    private readonly _projectRepository: ProjectRepository,
     @inject(TOKENS.opClient)
-    private readonly _client: OpenProjectClient,
+    _client: OpenProjectClient,
   ) {
-    this.refreshWPs();
+    _wpRepository.onWPsRefetch(() => this._onDidChangeTreeData.fire());
+    _projectRepository.onProjectsRefetch(() =>
+      this._onDidChangeTreeData.fire(),
+    );
+    _client.onInit(() => this.refresh());
   }
 
-  private workPackages: WP[] = [];
-
-  private _onDidChangeTreeData: vscode.EventEmitter<
-    void | WP | WP[] | null | undefined
-  > = new vscode.EventEmitter<void | WP | WP[] | null | undefined>();
-
-  onDidChangeTreeData?: Event<void | WP | WP[] | null | undefined> =
-    this._onDidChangeTreeData.event;
-
-  getTreeItem(element: WP): TreeItem | Promise<TreeItem> {
-    const iconPath = getIconPathByStatus(element.status.self.title as WPStatus);
-    return {
-      label: `#${element.id} ${element.subject}`,
-      collapsibleState:
-        element.children?.length > 0
-          ? vscode.TreeItemCollapsibleState.Collapsed
-          : vscode.TreeItemCollapsibleState.None,
-      iconPath: iconPath
-        ? vscode.Uri.file(path.join(__dirname, iconPath))
-        : undefined,
-    };
+  getTreeItem(element: WP | Project): TreeItem {
+    if (element instanceof WP) return new WPTreeItem(element);
+    if (element instanceof Project) return new ProjectTreeItem(element);
+    return {};
   }
 
-  getChildren(parentElement?: WP | undefined): ProviderResult<WP[]> {
+  getChildren(
+    parentElement?: WP | Project | undefined,
+  ): ProviderResult<WP[] | Project[]> {
     if (!parentElement) {
-      return this.workPackages.filter((wp) => !wp.parent);
+      return this._projectRepository.findAll();
     }
-    return this.workPackages.filter((wp) => wp.parent?.id === parentElement.id);
+    if (parentElement instanceof Project) {
+      return this._wpRepository.findByProjectId(parentElement.id);
+    }
+    return this._wpRepository.findByParentId(parentElement.id);
   }
 
-  getParent(element: WP): ProviderResult<WP> {
-    return this.workPackages.find((wp) => wp.id === element.parent.id);
+  getParent(element: WP | Project): ProviderResult<WP | Project | undefined> {
+    if (element instanceof Project) return undefined;
+    if (element.parent) return this._wpRepository.findById(element.parent.id);
+    return this._projectRepository.findById(element.project.id);
   }
 
   resolveTreeItem(item: TreeItem): ProviderResult<TreeItem> {
     return item;
   }
 
-  refreshWPs(): Promise<void> {
-    return this._client.getWPs().then((wps) => {
-      if (wps.length) {
-        this.workPackages = wps;
-        this._onDidChangeTreeData.fire();
-      }
-    });
+  refresh(): Promise<void> {
+    return Promise.all([
+      this._wpRepository.refetch(),
+      this._projectRepository.refetch(),
+    ]).then();
   }
 }

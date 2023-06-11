@@ -5,6 +5,10 @@ import OpenProjectTreeDataProvider from "../openProjectTreeDataProvider.interfac
 export default class OpenProjectTreeDataProviderImpl
   implements OpenProjectTreeDataProvider
 {
+  refresh = jest.fn();
+
+  onDidChangeTreeData = jest.fn();
+
   refreshWPs = jest.fn();
 
   getTreeItem = jest.fn();
