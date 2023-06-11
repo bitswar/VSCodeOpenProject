@@ -8,6 +8,8 @@ class Disposable {}
 
 class EventEmitter {
   fire = jest.fn();
+
+  event = jest.fn();
 }
 
 const languages = {
