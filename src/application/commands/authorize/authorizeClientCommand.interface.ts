@@ -1,3 +1,3 @@
 export default interface AuthorizeClientCommand {
-  authorizeClient(): Promise<void>;
+  authorizeClient(): void;
 }

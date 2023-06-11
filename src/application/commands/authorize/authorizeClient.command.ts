@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import * as vscode from "vscode";
 import TOKENS from "../../../DI/tokens";
-import OpenProjectClient from "../../../infrastructure/openProject/openProjectClient.interface";
-import OpenProjectTreeDataProvider from "../../views/openProjectTreeDataProvider.interface";
+import Logger from "../../../infrastructure/logger/logger.interface";
+import OpenProjectClient from "../../../infrastructure/openProject/openProject.client.interface";
 import AuthorizeClientCommand from "./authorizeClientCommand.interface";
 
 @injectable()
@@ -10,26 +10,37 @@ export default class AuthorizeClientCommandImpl
   implements AuthorizeClientCommand
 {
   constructor(
-    @inject(TOKENS.opTreeView)
-    private readonly _treeDataProvider: OpenProjectTreeDataProvider,
     @inject(TOKENS.opClient)
     private readonly _client: OpenProjectClient,
-  ) {}
+    @inject(TOKENS.logger)
+    private readonly _logger?: Logger,
+  ) {
+    this._client.onInit(() => {
+      this.showMessage();
+      this.setAuthedTrue();
+    });
+  }
 
-  async authorizeClient() {
+  authorizeClient() {
     const config = vscode.workspace.getConfiguration("openproject");
-    const user = await this._client.init(
-      config.get("base_url") ?? "",
-      config.get("token") ?? "",
-    );
-    if (!user) {
-      vscode.window.showErrorMessage("Failed connecting to OpenProject");
-      return;
-    }
+    this._client.init(config.get("base_url") ?? "", config.get("token") ?? "");
+  }
+
+  setAuthedTrue() {
     vscode.commands.executeCommand("setContext", "openproject.authed", true);
-    vscode.window.showInformationMessage(
-      `Hello, ${user.firstName} ${user.lastName}!`,
-    );
-    this._treeDataProvider.refreshWPs();
+  }
+
+  showMessage() {
+    return this._client
+      .getUser()
+      .then((user) => {
+        vscode.window.showInformationMessage(
+          `Hello, ${user.firstName} ${user.lastName}!`,
+        );
+      })
+      .catch((err) => {
+        this._logger?.error("Failed connecting to OpenProject: ", err);
+        vscode.window.showErrorMessage("Failed connecting to OpenProject");
+      });
   }
 }
