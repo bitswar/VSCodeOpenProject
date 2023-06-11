@@ -7,6 +7,10 @@ export default class ConsoleLogger implements Logger {
     console.log(...messages);
   }
 
+  debug(...messages: unknown[]): void {
+    console.debug(...messages);
+  }
+
   error(...messages: unknown[]): void {
     console.error(...messages);
   }

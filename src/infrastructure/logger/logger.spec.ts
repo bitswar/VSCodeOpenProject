@@ -19,6 +19,16 @@ describe("ConsoleLogger tests suite", () => {
     expect(console.log).toHaveBeenLastCalledWith(message);
   });
 
+  it("should call console.debug", () => {
+    const message = "Debug message!";
+
+    jest.spyOn(console, "debug");
+
+    logger.debug(message);
+
+    expect(console.debug).toHaveBeenLastCalledWith(message);
+  });
+
   it("should call console.error", () => {
     const message = "Error happened!";
 
