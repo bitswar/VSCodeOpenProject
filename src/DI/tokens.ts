@@ -4,6 +4,8 @@ const TOKENS = {
   refreshWPsCommand: Symbol.for("RefreshWPsCommand"),
   authorizeCommand: Symbol.for("AuthorizeClientCommand"),
   logger: Symbol.for("Logger"),
+  wpRepository: Symbol.for("WPRepository"),
+  projectRepository: Symbol.for("ProjectRepository"),
 };
 
 export default TOKENS;

@@ -6,10 +6,20 @@ import RefreshWPsCommandImpl from "../application/commands/refresh/refreshWPs.co
 import RefreshWPsCommand from "../application/commands/refresh/refreshWPsCommand.interface";
 import OpenProjectTreeDataProviderImpl from "../application/views/openProject.treeDataProvider";
 import OpenProjectTreeDataProvider from "../application/views/openProjectTreeDataProvider.interface";
+import ProjectWPsFilterImpl from "../core/filter/project/project.wpsFilter";
+import ProjectWPsFilter from "../core/filter/project/project.wpsFilter.interface";
+import StatusWPsFilterImpl from "../core/filter/status/status.wpsFilter";
+import StatusWPsFilter from "../core/filter/status/status.wpsFilter.interface";
+import TextWPsFilterImpl from "../core/filter/text/text.wpsFilter";
+import TextWPsFilter from "../core/filter/text/text.wpsFilter.interface";
 import ConsoleLogger from "../infrastructure/logger/logger";
 import Logger from "../infrastructure/logger/logger.interface";
 import OpenProjectClientImpl from "../infrastructure/openProject/openProject.client";
-import OpenProjectClient from "../infrastructure/openProject/openProjectClient.interface";
+import OpenProjectClient from "../infrastructure/openProject/openProject.client.interface";
+import ProjectRepositoryImpl from "../infrastructure/project/project.repository";
+import ProjectRepository from "../infrastructure/project/project.repository.interface";
+import WPRepositoryImpl from "../infrastructure/workPackage/wp.repository";
+import WPRepository from "../infrastructure/workPackage/wp.repository.interface";
 import TOKENS from "./tokens";
 
 const container = new Container();
@@ -32,6 +42,16 @@ container
 container
   .bind<RefreshWPsCommand>(TOKENS.refreshWPsCommand)
   .to(RefreshWPsCommandImpl)
+  .inSingletonScope();
+
+container
+  .bind<WPRepository>(TOKENS.wpRepository)
+  .to(WPRepositoryImpl)
+  .inSingletonScope();
+
+container
+  .bind<ProjectRepository>(TOKENS.projectRepository)
+  .to(ProjectRepositoryImpl)
   .inSingletonScope();
 
 container.bind<Logger>(TOKENS.logger).to(ConsoleLogger).inSingletonScope();
