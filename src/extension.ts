@@ -1,22 +1,38 @@
 import * as vscode from "vscode";
-import OpenProjectTreeDataProvider from "./views/openProject.treeDataProvider";
-import authorizeClient from "./commands/authorizeClient.command";
-import refreshWPs from "./commands/refreshWPs.command";
+import container from "./DI/container";
+import TOKENS from "./DI/tokens";
+import AuthorizeClientCommand from "./application/commands/authorize/authorizeClientCommand.interface";
+import RefreshWPsCommand from "./application/commands/refresh/refreshWPsCommand.interface";
+import OpenProjectTreeDataProvider from "./application/views/openProject.treeDataProvider";
 
 export function activate(context: vscode.ExtensionContext) {
-  authorizeClient();
-  const authCommand = vscode.commands.registerCommand(
-    "openproject.auth",
-    authorizeClient,
+  const authCommand = container.get<AuthorizeClientCommand>(
+    TOKENS.authorizeCommand,
   );
-  const refreshWPsCommand = vscode.commands.registerCommand(
-    "openproject.refresh",
-    refreshWPs,
+  const refreshCommand = container.get<RefreshWPsCommand>(
+    TOKENS.refreshWPsCommand,
   );
-  vscode.window.createTreeView("openproject-workspaces", {
-    treeDataProvider: OpenProjectTreeDataProvider.getInstance(),
-  });
-  context.subscriptions.push(authCommand, refreshWPsCommand);
+  const treeView = container.get<OpenProjectTreeDataProvider>(
+    TOKENS.opTreeView,
+  );
+
+  const components = [
+    vscode.commands.registerCommand(
+      "openproject.auth",
+      authCommand.authorizeClient,
+    ),
+    vscode.commands.registerCommand(
+      "openproject.refresh",
+      refreshCommand.refreshWPs,
+    ),
+    vscode.window.createTreeView("openproject-workspaces", {
+      treeDataProvider: treeView,
+    }),
+  ];
+
+  context.subscriptions.push(...components);
+
+  authCommand.authorizeClient();
 }
 
 export function deactivate() {}

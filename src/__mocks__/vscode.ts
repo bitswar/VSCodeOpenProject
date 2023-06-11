@@ -2,9 +2,13 @@
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import type { window as vscodeWindow } from "vscode";
+
 class Disposable {}
 
-class EventEmitter {}
+class EventEmitter {
+  fire = jest.fn();
+}
 
 const languages = {
   createDiagnosticCollection: jest.fn(),
@@ -12,7 +16,7 @@ const languages = {
 
 const StatusBarAlignment = {};
 
-const window = {
+const windowMocked: typeof vscodeWindow = {
   createStatusBarItem: jest.fn(() => ({
     show: jest.fn(),
   })),
@@ -21,7 +25,10 @@ const window = {
   showInformationMessage: jest.fn(),
   createTextEditorDecorationType: jest.fn(),
   createTreeView: jest.fn(),
-};
+  createInputBox: jest.fn(),
+  showInputBox: jest.fn(),
+  showQuickPick: jest.fn(),
+} as any;
 
 const workspace = {
   getConfiguration: jest.fn(),
@@ -34,10 +41,9 @@ const OverviewRulerLane = {
 };
 
 const Uri = {
-  file: (f) => f,
+  file: (f: any) => f,
   parse: jest.fn(),
 };
-const Range = jest.fn();
 const Diagnostic = jest.fn();
 const DiagnosticSeverity = { Error: 0, Warning: 1, Information: 2, Hint: 3 };
 
@@ -45,6 +51,7 @@ const debug = {
   onDidTerminateDebugSession: jest.fn(),
   startDebugging: jest.fn(),
 };
+const RangeMocked = jest.fn();
 
 const commands = {
   executeCommand: jest.fn(),
@@ -57,21 +64,19 @@ const TreeItemCollapsibleState = {
   Expanded: 2,
 };
 
-const vscode = {
-  TreeItemCollapsibleState,
-  EventEmitter,
-  Disposable,
-  languages,
-  StatusBarAlignment,
-  window,
-  workspace,
-  OverviewRulerLane,
-  Uri,
-  Range,
+export {
   Diagnostic,
   DiagnosticSeverity,
-  debug,
+  Disposable,
+  EventEmitter,
+  OverviewRulerLane,
+  RangeMocked as Range,
+  StatusBarAlignment,
+  TreeItemCollapsibleState,
+  Uri,
   commands,
+  debug,
+  languages,
+  windowMocked as window,
+  workspace,
 };
-
-module.exports = vscode;

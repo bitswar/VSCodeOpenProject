@@ -5,10 +5,13 @@
     "sourceMap": true,
     "rootDir": "src",
     "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strict": true,
     "types": [
       "jest",
-      "node"
+      "node",
+      "reflect-metadata",
     ]
-  }
+  },
 }

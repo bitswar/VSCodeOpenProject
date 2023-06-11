@@ -1,34 +1,29 @@
+import { inject, injectable } from "inversify";
 import { WP } from "op-client";
-import * as vscode from "vscode";
-import { Event, ProviderResult, TreeDataProvider, TreeItem } from "vscode";
-import OpenProjectClient from "../openProject.client";
-import getIconPathByStatus from "../utils/getIconPathByStatus.util";
 import path from "path";
+import * as vscode from "vscode";
+import { Event, ProviderResult, TreeItem } from "vscode";
+import TOKENS from "../../DI/tokens";
+import OpenProjectClient from "../../infrastructure/openProject/openProject.client";
+import getIconPathByStatus from "../../utils/getIconPathByStatus.util";
+import OpenProjectTreeDataProvider from "./openProjectTreeDataProvider.interface";
 
-export default class OpenProjectTreeDataProvider
-  implements TreeDataProvider<WP>
+@injectable()
+export default class OpenProjectTreeDataProviderImpl
+  implements OpenProjectTreeDataProvider
 {
-  private static _instance: OpenProjectTreeDataProvider;
-
-  public static getInstance(): OpenProjectTreeDataProvider {
-    if (!this._instance) {
-      this._instance = new OpenProjectTreeDataProvider();
-    }
-    return this._instance;
+  constructor(
+    @inject(TOKENS.opClient)
+    private readonly _client: OpenProjectClient,
+  ) {
+    this.refreshWPs();
   }
-
-  private _client: OpenProjectClient;
 
   private workPackages: WP[] = [];
 
   private _onDidChangeTreeData: vscode.EventEmitter<
     void | WP | WP[] | null | undefined
   > = new vscode.EventEmitter<void | WP | WP[] | null | undefined>();
-
-  private constructor() {
-    this._client = OpenProjectClient.getInstance();
-    this.refreshWPs();
-  }
 
   onDidChangeTreeData?: Event<void | WP | WP[] | null | undefined> =
     this._onDidChangeTreeData.event;
@@ -47,11 +42,11 @@ export default class OpenProjectTreeDataProvider
     };
   }
 
-  getChildren(element?: WP | undefined): ProviderResult<WP[]> {
-    if (!element) {
+  getChildren(parentElement?: WP | undefined): ProviderResult<WP[]> {
+    if (!parentElement) {
       return this.workPackages.filter((wp) => !wp.parent);
     }
-    return this.workPackages.filter((wp) => wp.parent?.id === element.id);
+    return this.workPackages.filter((wp) => wp.parent?.id === parentElement.id);
   }
 
   getParent(element: WP): ProviderResult<WP> {
@@ -62,8 +57,8 @@ export default class OpenProjectTreeDataProvider
     return item;
   }
 
-  refreshWPs(): Promise<void> | undefined {
-    return this._client.getWPs()?.then((wps) => {
+  refreshWPs(): Promise<void> {
+    return this._client.getWPs().then((wps) => {
       if (wps.length) {
         this.workPackages = wps;
         this._onDidChangeTreeData.fire();

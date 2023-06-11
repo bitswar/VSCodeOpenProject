@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
 import getIconPathByStatus from "./getIconPathByStatus.util";
 
-describe("getIconPathByStatus test suit", () => {
-  describe("return correct path suit", () => {
+describe("getIconPathByStatus test suite", () => {
+  describe("return correct path suite", () => {
     it("should return correct path of 'Confirmed' icon", () => {
       expect(getIconPathByStatus("Confirmed")).toEqual(
         "resources/confirmed.png",

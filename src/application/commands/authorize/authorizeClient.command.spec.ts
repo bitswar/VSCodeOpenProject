@@ -1,33 +1,34 @@
-// jest.mock("../__mocks__/vscode", () => vscode);
-jest.mock("../openProject.client");
-jest.mock("../views/openProject.treeDataProvider");
-const vscode = require("../__mocks__/vscode");
+jest.mock("../../../infrastructure/openProject/openProject.client");
+jest.mock("../../views/openProject.treeDataProvider");
 
 import { faker } from "@faker-js/faker";
 import { User } from "op-client";
-import OpenProjectClient from "../openProject.client";
-import VSCodeConfigMock from "../test/config.mock";
-import OpenProjectTreeDataProvider from "../views/openProject.treeDataProvider";
-import authorizeClient from "./authorizeClient.command";
+import container from "../../../DI/container";
+import TOKENS from "../../../DI/tokens";
+import * as vscode from "../../../__mocks__/vscode";
+import OpenProjectClient from "../../../infrastructure/openProject/openProject.client";
+import VSCodeConfigMock from "../../../test/config.mock";
+import OpenProjectTreeDataProvider from "../../views/openProject.treeDataProvider";
+import AuthorizeClientCommandImpl from "./authorizeClient.command";
 
-describe("Authorize client command test suit", () => {
-  const client = new OpenProjectClient();
-  const config = new VSCodeConfigMock({
-    base_url: faker.internet.url(),
-    token: faker.string.sample(),
-  });
+describe("Authorize client command test suite", () => {
+  let command: AuthorizeClientCommandImpl;
+  let client: OpenProjectClient;
+  let treeDataProvider: OpenProjectTreeDataProvider;
+  let config: VSCodeConfigMock;
   const user = new User(1);
-  const treeDataProvider = { refreshWPs: jest.fn() };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(OpenProjectClient, "getInstance").mockReturnValue(client);
+    command = container.get(TOKENS.authorizeCommand);
+    client = container.get(TOKENS.opClient);
+    treeDataProvider = container.get(TOKENS.opTreeView);
+    config = new VSCodeConfigMock({
+      base_url: faker.internet.url(),
+      token: faker.string.sample(),
+    });
     jest.spyOn(vscode.workspace, "getConfiguration").mockReturnValue(config);
     jest.spyOn(client, "init").mockResolvedValue(user);
-
-    jest
-      .spyOn(OpenProjectTreeDataProvider, "getInstance")
-      .mockReturnValue(treeDataProvider as any);
 
     user.firstName = faker.person.firstName();
     user.lastName = faker.person.lastName();
@@ -35,7 +36,7 @@ describe("Authorize client command test suit", () => {
 
   describe("Init call", () => {
     it("should call init with correct data", async () => {
-      await authorizeClient();
+      await command.authorizeClient();
       expect(client.init).toHaveBeenLastCalledWith(
         config.get("base_url"),
         config.get("token"),
@@ -47,7 +48,7 @@ describe("Authorize client command test suit", () => {
         .spyOn(vscode.workspace, "getConfiguration")
         .mockReturnValue(emptyConfig);
 
-      await authorizeClient();
+      await command.authorizeClient();
 
       expect(client.init).toHaveBeenLastCalledWith("", "");
     });
@@ -57,7 +58,7 @@ describe("Authorize client command test suit", () => {
     it("should set 'openproject.authed' to true on success", async () => {
       jest.spyOn(vscode.commands, "executeCommand");
 
-      await authorizeClient();
+      await command.authorizeClient();
 
       expect(vscode.commands.executeCommand).toHaveBeenLastCalledWith(
         "setContext",
@@ -69,7 +70,7 @@ describe("Authorize client command test suit", () => {
     it("should show message 'Hello' on success", async () => {
       jest.spyOn(vscode.window, "showInformationMessage");
 
-      await authorizeClient();
+      await command.authorizeClient();
 
       expect(vscode.window.showInformationMessage).toHaveBeenLastCalledWith(
         `Hello, ${user.firstName} ${user.lastName}!`,
@@ -77,7 +78,7 @@ describe("Authorize client command test suit", () => {
     });
 
     it("should call 'refresh WPs' on treeDataProvider", async () => {
-      await authorizeClient();
+      await command.authorizeClient();
 
       expect(treeDataProvider.refreshWPs).toHaveBeenCalled();
     });
@@ -87,7 +88,7 @@ describe("Authorize client command test suit", () => {
       jest.spyOn(vscode.window, "showErrorMessage");
       jest.spyOn(client, "init").mockResolvedValue(undefined);
 
-      await authorizeClient();
+      await command.authorizeClient();
 
       expect(vscode.window.showErrorMessage).toHaveBeenLastCalledWith(
         "Failed connecting to OpenProject",
@@ -96,13 +97,11 @@ describe("Authorize client command test suit", () => {
 
     it("should call nothing else", async () => {
       jest.spyOn(client, "init").mockResolvedValue(undefined);
-      jest.spyOn(OpenProjectTreeDataProvider, "getInstance");
       jest.spyOn(vscode.commands, "executeCommand");
       jest.spyOn(vscode.window, "showInformationMessage");
 
-      await authorizeClient();
+      await command.authorizeClient();
 
-      expect(OpenProjectTreeDataProvider.getInstance).not.toHaveBeenCalled();
       expect(vscode.commands.executeCommand).not.toHaveBeenCalled();
       expect(vscode.window.showInformationMessage).not.toHaveBeenCalled();
     });

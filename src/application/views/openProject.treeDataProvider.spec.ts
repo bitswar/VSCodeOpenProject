@@ -1,12 +1,23 @@
+jest.mock("../../infrastructure/openProject/openProject.client");
+import { WP } from "op-client";
 import { TreeItemCollapsibleState } from "vscode";
-import OpenProjectTreeDataProvider from "./openProject.treeDataProvider";
+import container from "../../DI/container";
+import TOKENS from "../../DI/tokens";
+import OpenProjectClient from "../../infrastructure/openProject/openProjectClient.interface";
+import OpenProjectTreeDataProviderImpl from "./openProject.treeDataProvider";
 
 describe("OpenProjectTreeDataProvider", () => {
-  let instance: OpenProjectTreeDataProvider;
+  let treeView: OpenProjectTreeDataProviderImpl;
+  let client: OpenProjectClient;
+
+  beforeAll(() => {
+    client = container.get(TOKENS.opClient);
+    jest.spyOn(client, "getWPs").mockResolvedValue([]);
+    treeView = container.get(TOKENS.opTreeView);
+  });
 
   beforeEach(() => {
-    instance = OpenProjectTreeDataProvider.getInstance();
-    jest.spyOn(instance["_client"], "getWPs").mockResolvedValue([]);
+    jest.spyOn(client, "getWPs").mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -15,25 +26,7 @@ describe("OpenProjectTreeDataProvider", () => {
 
   describe("refreshWPs", () => {
     it("should update the workPackages array with new work packages", async () => {
-      instance["_onDidChangeTreeData"] = { fire: jest.fn() } as any;
-      jest.spyOn(instance["_client"], "getWPs").mockResolvedValue([
-        {
-          id: 1,
-          subject: "Test Work Package",
-          status: {
-            self: {
-              title: "New",
-            },
-          },
-          children: [],
-          parent: null,
-          ancestor: null,
-        } as any,
-      ]);
-
-      await instance.refreshWPs();
-
-      expect(instance["workPackages"]).toEqual([
+      const wps: WP[] = [
         {
           id: 1,
           subject: "Test Work Package",
@@ -46,11 +39,15 @@ describe("OpenProjectTreeDataProvider", () => {
           parent: null,
           ancestor: null,
         },
-      ]);
+      ] as any;
+      jest.spyOn(client, "getWPs").mockResolvedValue(wps);
+
+      await treeView.refreshWPs();
+
+      expect(treeView["workPackages"]).toEqual(wps);
     });
     it("should fire _onDidChangeTreeData", async () => {
-      instance["_onDidChangeTreeData"] = { fire: jest.fn() } as any;
-      jest.spyOn(instance["_client"], "getWPs").mockResolvedValue([
+      jest.spyOn(client, "getWPs").mockResolvedValue([
         {
           id: 1,
           subject: "Test Work Package",
@@ -65,9 +62,9 @@ describe("OpenProjectTreeDataProvider", () => {
         } as any,
       ]);
 
-      await instance.refreshWPs();
+      await treeView.refreshWPs();
 
-      expect(instance["_onDidChangeTreeData"].fire).toHaveBeenCalled();
+      expect(treeView["_onDidChangeTreeData"].fire).toHaveBeenCalled();
     });
   });
 
@@ -85,7 +82,7 @@ describe("OpenProjectTreeDataProvider", () => {
         parent: null,
         ancestor: null,
       };
-      const treeItem = await instance.getTreeItem(wp as any);
+      const treeItem = await treeView.getTreeItem(wp as any);
       expect(treeItem.label).toEqual("#1 Test Work Package");
       expect(treeItem.collapsibleState).toEqual(TreeItemCollapsibleState.None);
       expect(treeItem.iconPath).toBeUndefined();
@@ -103,7 +100,7 @@ describe("OpenProjectTreeDataProvider", () => {
         parent: null,
         ancestor: null,
       };
-      const treeItem = await instance.getTreeItem(wp as any);
+      const treeItem = await treeView.getTreeItem(wp as any);
       expect(treeItem.label).toEqual("#1 Test Work Package");
       expect(treeItem.collapsibleState).toEqual(TreeItemCollapsibleState.None);
       expect(treeItem.iconPath).toBeUndefined();
@@ -121,7 +118,7 @@ describe("OpenProjectTreeDataProvider", () => {
         parent: null,
         ancestor: null,
       };
-      const treeItem = await instance.getTreeItem(wp as any);
+      const treeItem = await treeView.getTreeItem(wp as any);
       expect(treeItem.label).toEqual("#1 Test Work Package");
       expect(treeItem.collapsibleState).toEqual(
         TreeItemCollapsibleState.Collapsed,
@@ -141,7 +138,7 @@ describe("OpenProjectTreeDataProvider", () => {
         parent: null,
         ancestor: null,
       };
-      const treeItem = await instance.getTreeItem(wp as any);
+      const treeItem = await treeView.getTreeItem(wp as any);
       expect(treeItem.label).toEqual("#1 Test Work Package");
       expect(treeItem.collapsibleState).toEqual(
         TreeItemCollapsibleState.Collapsed,
@@ -152,7 +149,7 @@ describe("OpenProjectTreeDataProvider", () => {
 
   describe("getChildren", () => {
     it("should return the top-level work packages", () => {
-      instance["workPackages"] = [
+      treeView["workPackages"] = [
         {
           id: 1,
           subject: "Test Work Package 1",
@@ -178,7 +175,7 @@ describe("OpenProjectTreeDataProvider", () => {
           ancestor: null,
         },
       ] as any;
-      const topLevelWPs = instance.getChildren();
+      const topLevelWPs = treeView.getChildren();
       expect(topLevelWPs).toEqual([
         {
           id: 1,
@@ -236,9 +233,9 @@ describe("OpenProjectTreeDataProvider", () => {
         parent: null,
         ancestor: null,
       };
-      instance["workPackages"] = [parentWP, ...parentWP.children] as any;
+      treeView["workPackages"] = [parentWP, ...parentWP.children] as any;
 
-      expect(instance.getChildren(parentWP as any)).toEqual([
+      expect(treeView.getChildren(parentWP as any)).toEqual([
         {
           id: 2,
           subject: "Child Work Package",
@@ -261,7 +258,7 @@ describe("OpenProjectTreeDataProvider", () => {
   describe("resolveTreeItem", () => {
     it("should return item", () => {
       const item = {};
-      expect(instance.resolveTreeItem(item)).toEqual(item);
+      expect(treeView.resolveTreeItem(item)).toEqual(item);
     });
   });
 
@@ -314,8 +311,8 @@ describe("OpenProjectTreeDataProvider", () => {
         parent: null,
         ancestor: null,
       };
-      instance["workPackages"] = [ancestorWP, ...ancestorWP.children] as any;
-      const parentWP = instance.getParent({
+      treeView["workPackages"] = [ancestorWP, ...ancestorWP.children] as any;
+      const parentWP = treeView.getParent({
         id: 3,
         subject: "Child Work Package",
         status: {
