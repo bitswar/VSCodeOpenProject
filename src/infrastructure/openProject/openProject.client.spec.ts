@@ -1,15 +1,16 @@
 jest.mock("../logger/logger");
 
 import { faker } from "@faker-js/faker";
-import { User, WP } from "op-client";
+import { Project, User, WP } from "op-client";
 import "reflect-metadata";
 import container from "../../DI/container";
 import TOKENS from "../../DI/tokens";
+import ConsoleLogger from "../logger/logger";
+import Logger from "../logger/logger.interface";
 import ClientNotInitializedException from "./clientNotInitialized.exception";
+import OpenProjectClientImpl from "./openProject.client";
 import UnexceptedClientException from "./unexpectedClientError.exception";
 import UserNotFound from "./userNotFound.exception";
-import OpenProjectClientImpl from "./openProject.client";
-import Logger from "../logger/logger.interface";
 
 jest.mock("op-client");
 
@@ -30,14 +31,32 @@ describe("OpenProject Client tests", () => {
   });
 
   describe("Initialization", () => {
-    it("should be initialized correctly", async () => {
+    it("should be initialized correctly", () => {
       const token = faker.string.alphanumeric();
       const baseUrl = faker.internet.url();
-      const user = new User(1);
 
-      jest.spyOn(client, "getUser").mockResolvedValueOnce(user);
+      expect(client.init(baseUrl, token)).toBeUndefined();
+    });
+    it("should fire event", () => {
+      const token = faker.string.alphanumeric();
+      const baseUrl = faker.internet.url();
+      jest.spyOn(client["_onInit"], "fire");
 
-      expect(await client.init(baseUrl, token)).toEqual(user);
+      client.init(baseUrl, token);
+
+      expect(client["_onInit"].fire).toHaveBeenCalled();
+    });
+    it("should pass correct logger factory function", () => {
+      const token = faker.string.alphanumeric();
+      const baseUrl = faker.internet.url();
+
+      client.init(baseUrl, token);
+
+      expect(
+        (
+          client["_entityManager"]!.constructor as jest.Mock
+        ).mock.calls[0][0].createLogger(),
+      ).toBeInstanceOf(ConsoleLogger);
     });
   });
 
@@ -115,6 +134,35 @@ describe("OpenProject Client tests", () => {
     });
   });
 
+  describe("getProjects", () => {
+    it("should call getMany", async () => {
+      jest.spyOn(client["_entityManager"]!, "getMany");
+
+      await client.getProjects();
+
+      expect(client["_entityManager"]!.getMany).toHaveBeenLastCalledWith(
+        Project,
+        {
+          pageSize: 100,
+          all: true,
+          filters: [],
+        },
+      );
+    });
+    it("should return projects", async () => {
+      const projects = faker.helpers.uniqueArray(
+        () => new Project(faker.number.int()),
+        5,
+      );
+
+      jest
+        .spyOn(client["_entityManager"]!, "getMany")
+        .mockResolvedValueOnce(projects);
+
+      expect(await client.getProjects()).toEqual(projects);
+    });
+  });
+
   describe("addTokenToUrl", () => {
     it("should return correct url", () => {
       const token = faker.string.alphanumeric(10);
@@ -123,11 +171,6 @@ describe("OpenProject Client tests", () => {
       const result = `http://apikey:${token}@google.com/`;
 
       expect(client["addTokenToUrl"](url, token)).toBe(result);
-    });
-  });
-  describe("getLogger", () => {
-    it("should return logger", () => {
-      expect(client["getLogger"]()).toEqual(logger);
     });
   });
 });

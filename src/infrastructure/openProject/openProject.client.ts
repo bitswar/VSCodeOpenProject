@@ -1,19 +1,24 @@
 import ClientOAuth2 from "client-oauth2";
 import { inject, injectable } from "inversify";
-import { EntityManager, User, WP } from "op-client";
+import { EntityManager, Project, User, WP } from "op-client";
+import * as vscode from "vscode";
 import TOKENS from "../../DI/tokens";
 import addCredsToUrl from "../../utils/addCredsToUrl.util";
 import Logger from "../logger/logger";
 import ClientNotInitializedException from "./clientNotInitialized.exception";
-import OpenProjectClient from "./openProjectClient.interface";
+import OpenProjectClient from "./openProject.client.interface";
 import UnexceptedClientException from "./unexpectedClientError.exception";
 import UserNotFound from "./userNotFound.exception";
 
 @injectable()
 export default class OpenProjectClientImpl implements OpenProjectClient {
-  constructor(@inject(TOKENS.logger) private readonly _logger: Logger) {}
+  private _onInit = new vscode.EventEmitter<void>();
 
   private _entityManager?: EntityManager | undefined;
+
+  onInit = this._onInit.event;
+
+  constructor(@inject(TOKENS.logger) private readonly _logger: Logger) {}
 
   private get entityManager(): EntityManager {
     if (!this._entityManager) throw new ClientNotInitializedException();
@@ -24,16 +29,16 @@ export default class OpenProjectClientImpl implements OpenProjectClient {
     this._entityManager = value;
   }
 
-  public init(baseUrl: string, token: string): Promise<User | undefined> {
+  public init(baseUrl: string, token: string): void {
     this.entityManager = new EntityManager({
       baseUrl: this.addTokenToUrl(baseUrl, token),
-      createLogger: this.getLogger,
+      createLogger: () => this._logger,
       token: new ClientOAuth2({}).createToken(token, {}),
     });
-    return this.getUser();
+    this._onInit.fire();
   }
 
-  public getUser(): Promise<User | undefined> {
+  public getUser(): Promise<User> {
     return this.entityManager
       .fetch("api/v3/users/me")
       .then((response) => {
@@ -60,11 +65,15 @@ export default class OpenProjectClientImpl implements OpenProjectClient {
     });
   }
 
-  private addTokenToUrl(baseUrl: string, token: string) {
-    return addCredsToUrl(baseUrl, "apikey", token);
+  public getProjects(): Promise<Project[]> {
+    return this.entityManager.getMany<Project>(Project, {
+      pageSize: 100,
+      all: true,
+      filters: [],
+    });
   }
 
-  private getLogger(): Logger {
-    return this._logger;
+  private addTokenToUrl(baseUrl: string, token: string) {
+    return addCredsToUrl(baseUrl, "apikey", token);
   }
 }
