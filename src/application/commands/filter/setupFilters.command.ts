@@ -63,7 +63,7 @@ export default class SetupFiltersCommandImpl implements SetupFiltersCommand {
       canPickMany: true,
       title: "Select wps of which projects you want to see: ",
     });
-    const projectIds = results ? results.map((item) => item.projectId) : [];
+    const projectIds = (results ?? items).map((item) => item.projectId);
     this._projectFilter.setProjectFilter(projectIds);
   }
 
@@ -73,7 +73,7 @@ export default class SetupFiltersCommandImpl implements SetupFiltersCommand {
       canPickMany: true,
       title: "Select wps of which status you want to see: ",
     });
-    const statuses = results ? results.map((item) => item.status) : [];
+    const statuses = (results ?? items).map((item) => item.status);
     this._statusFilter.setStatusFilter(statuses);
   }
 
