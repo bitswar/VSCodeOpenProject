@@ -42,7 +42,7 @@ describe("WPs text filter test suite", () => {
     const bugWP = {
       subject: "Bug!",
       author: {
-        self: { title: "Svante Kaiser" },
+        self: { title: undefined },
       },
       body: {},
     } as WP;
