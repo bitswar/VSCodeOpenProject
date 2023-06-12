@@ -11,6 +11,6 @@ export default class RefreshWPsCommandImpl implements RefreshWPsCommand {
   ) {}
 
   refreshWPs() {
-    this._treeDataProvider.refreshWPs();
+    this._treeDataProvider.refresh();
   }
 }

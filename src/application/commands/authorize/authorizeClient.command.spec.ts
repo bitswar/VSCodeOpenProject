@@ -1,3 +1,4 @@
+/* eslint-disable no-new */
 jest.mock("../../../infrastructure/openProject/openProject.client");
 
 import { faker } from "@faker-js/faker";
@@ -9,6 +10,7 @@ import OpenProjectClient from "../../../infrastructure/openProject/openProject.c
 import UserNotFound from "../../../infrastructure/openProject/userNotFound.exception";
 import VSCodeConfigMock from "../../../test/config.mock";
 import AuthorizeClientCommandImpl from "./authorizeClient.command";
+import ConsoleLogger from "../../../infrastructure/logger/logger";
 
 describe("Authorize client command test suite", () => {
   let command: AuthorizeClientCommandImpl;
@@ -18,6 +20,36 @@ describe("Authorize client command test suite", () => {
     jest.clearAllMocks();
     command = container.get(TOKENS.authorizeCommand);
     client = container.get(TOKENS.opClient);
+  });
+
+  describe("Constructor", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    it("should showMessage on client onInit", () => {
+      const spy = jest.spyOn(client, "onInit");
+
+      const newCommand = new AuthorizeClientCommandImpl(
+        client,
+        new ConsoleLogger(),
+      );
+
+      expect(spy.mock.calls).toEqual(
+        expect.arrayContaining([[newCommand.showMessage, newCommand]]),
+      );
+    });
+    it("should setAuthedTrue on client onInit", () => {
+      const spy = jest.spyOn(client, "onInit");
+
+      const newCommand = new AuthorizeClientCommandImpl(
+        client,
+        new ConsoleLogger(),
+      );
+
+      expect(spy.mock.calls).toEqual(
+        expect.arrayContaining([[newCommand.setAuthedTrue, newCommand]]),
+      );
+    });
   });
 
   describe("authorizeClient", () => {

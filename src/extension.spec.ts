@@ -7,8 +7,10 @@ const vscode = require("./__mocks__/vscode");
 import container from "./DI/container";
 import TOKENS from "./DI/tokens";
 import AuthorizeClientCommand from "./application/commands/authorize/authorizeClientCommand.interface";
+import SetupFiltersCommand from "./application/commands/filter/setupFilters.command.interface";
 import RefreshWPsCommand from "./application/commands/refresh/refreshWPsCommand.interface";
 import OpenProjectTreeDataProvider from "./application/views/openProjectTreeDataProvider.interface";
+import CompositeWPsFilter from "./core/filter/composite/composite.wpsFilter.interface";
 import { activate, deactivate } from "./extension";
 
 describe("activate", () => {
@@ -16,9 +18,13 @@ describe("activate", () => {
 
   let authCommand: AuthorizeClientCommand;
   let refreshCommand: RefreshWPsCommand;
+  let setupFiltersCommand: SetupFiltersCommand;
   let treeView: OpenProjectTreeDataProvider;
 
   beforeAll(() => {
+    setupFiltersCommand = container.get<SetupFiltersCommand>(
+      TOKENS.setupFiltersCommand,
+    );
     authCommand = container.get<AuthorizeClientCommand>(
       TOKENS.authorizeCommand,
     );
@@ -37,7 +43,7 @@ describe("activate", () => {
       activate(context);
       expect(vscode.commands.registerCommand.mock.calls).toEqual(
         expect.arrayContaining([
-          ["openproject.auth", authCommand.authorizeClient],
+          ["openproject.auth", authCommand.authorizeClient, authCommand],
         ]),
       );
     });
@@ -45,7 +51,19 @@ describe("activate", () => {
       activate(context);
       expect(vscode.commands.registerCommand.mock.calls).toEqual(
         expect.arrayContaining([
-          ["openproject.refresh", refreshCommand.refreshWPs],
+          ["openproject.refresh", refreshCommand.refreshWPs, refreshCommand],
+        ]),
+      );
+    });
+    it("registers setup filter command", () => {
+      activate(context);
+      expect(vscode.commands.registerCommand.mock.calls).toEqual(
+        expect.arrayContaining([
+          [
+            "openproject.setupFilter",
+            setupFiltersCommand.setupFilters,
+            setupFiltersCommand,
+          ],
         ]),
       );
     });
@@ -60,9 +78,9 @@ describe("activate", () => {
   });
 
   describe("subscriptions", () => {
-    it("adds 3 subscriptions to context", () => {
+    it("adds 4 subscriptions to context", () => {
       activate(context);
-      expect(context.subscriptions).toHaveLength(3);
+      expect(context.subscriptions).toHaveLength(4);
     });
     it("adds authCommand to subscriptions to context", () => {
       jest
@@ -90,6 +108,19 @@ describe("activate", () => {
       expect(context.subscriptions).toEqual(
         expect.arrayContaining(["openproject-workspaces"]),
       );
+    });
+  });
+
+  describe("setupFilters", () => {
+    it("should push all filters", () => {
+      const compositeFilter = container.get<CompositeWPsFilter>(
+        TOKENS.compositeFilter,
+      );
+      jest.spyOn(compositeFilter, "pushFilter");
+
+      activate(context);
+
+      expect(compositeFilter.pushFilter).toHaveBeenCalled();
     });
   });
 });

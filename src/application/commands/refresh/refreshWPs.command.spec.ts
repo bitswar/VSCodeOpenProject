@@ -13,11 +13,12 @@ describe("refresh WPs command test suite", () => {
     treeDataProvider = container.get(TOKENS.opTreeView);
     command = container.get(TOKENS.refreshWPsCommand);
   });
+
   it("should call refreshWPs func", () => {
-    jest.spyOn(treeDataProvider, "refreshWPs");
+    jest.spyOn(treeDataProvider, "refresh");
 
     command.refreshWPs();
 
-    expect(treeDataProvider.refreshWPs).toHaveBeenCalled();
+    expect(treeDataProvider.refresh).toHaveBeenCalled();
   });
 });

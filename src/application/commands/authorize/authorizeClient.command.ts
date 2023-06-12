@@ -13,12 +13,10 @@ export default class AuthorizeClientCommandImpl
     @inject(TOKENS.opClient)
     private readonly _client: OpenProjectClient,
     @inject(TOKENS.logger)
-    private readonly _logger?: Logger,
+    private readonly _logger: Logger,
   ) {
-    this._client.onInit(() => {
-      this.showMessage();
-      this.setAuthedTrue();
-    });
+    this._client.onInit(this.showMessage, this);
+    this._client.onInit(this.setAuthedTrue, this);
   }
 
   authorizeClient() {
@@ -39,7 +37,7 @@ export default class AuthorizeClientCommandImpl
         );
       })
       .catch((err) => {
-        this._logger?.error("Failed connecting to OpenProject: ", err);
+        this._logger.error("Failed connecting to OpenProject: ", err);
         vscode.window.showErrorMessage("Failed connecting to OpenProject");
       });
   }

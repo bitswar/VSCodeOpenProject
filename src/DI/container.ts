@@ -2,10 +2,14 @@ import { Container } from "inversify";
 import "reflect-metadata";
 import AuthorizeClientCommandImpl from "../application/commands/authorize/authorizeClient.command";
 import AuthorizeClientCommand from "../application/commands/authorize/authorizeClientCommand.interface";
+import SetupFiltersCommandImpl from "../application/commands/filter/setupFilters.command";
+import SetupFiltersCommand from "../application/commands/filter/setupFilters.command.interface";
 import RefreshWPsCommandImpl from "../application/commands/refresh/refreshWPs.command";
 import RefreshWPsCommand from "../application/commands/refresh/refreshWPsCommand.interface";
 import OpenProjectTreeDataProviderImpl from "../application/views/openProject.treeDataProvider";
 import OpenProjectTreeDataProvider from "../application/views/openProjectTreeDataProvider.interface";
+import CompositeWPsFilterImpl from "../core/filter/composite/composite.wpsFilter";
+import CompositeWPsFilter from "../core/filter/composite/composite.wpsFilter.interface";
 import ProjectWPsFilterImpl from "../core/filter/project/project.wpsFilter";
 import ProjectWPsFilter from "../core/filter/project/project.wpsFilter.interface";
 import StatusWPsFilterImpl from "../core/filter/status/status.wpsFilter";
@@ -60,6 +64,11 @@ container
   .inSingletonScope();
 
 container
+  .bind<CompositeWPsFilter>(TOKENS.compositeFilter)
+  .to(CompositeWPsFilterImpl)
+  .inSingletonScope();
+
+container
   .bind<WPRepository>(TOKENS.wpRepository)
   .to(WPRepositoryImpl)
   .inSingletonScope();
@@ -67,6 +76,11 @@ container
 container
   .bind<ProjectRepository>(TOKENS.projectRepository)
   .to(ProjectRepositoryImpl)
+  .inSingletonScope();
+
+container
+  .bind<SetupFiltersCommand>(TOKENS.setupFiltersCommand)
+  .to(SetupFiltersCommandImpl)
   .inSingletonScope();
 
 container.bind<Logger>(TOKENS.logger).to(ConsoleLogger).inSingletonScope();

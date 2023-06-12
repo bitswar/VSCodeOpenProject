@@ -1,14 +1,17 @@
 jest.mock("../openProject/openProject.client");
+jest.mock("../../core/filter/composite/composite.wpsFilter.interface");
 
 import { Project, WP } from "op-client";
 import container from "../../DI/container";
 import TOKENS from "../../DI/tokens";
+import CompositeWPsFilter from "../../core/filter/composite/composite.wpsFilter.interface";
 import OpenProjectClient from "../openProject/openProject.client.interface";
 import WPRepositoryImpl from "./wp.repository";
 import WPNotFoundException from "./wpNotFount.exception";
 
 describe("WP repository test suite", () => {
   const client = container.get<OpenProjectClient>(TOKENS.opClient);
+  const filter = container.get<CompositeWPsFilter>(TOKENS.compositeFilter);
   const repository = container.get<WPRepositoryImpl>(TOKENS.wpRepository);
   const wp1 = new WP(1);
   const wp2 = new WP(2);
@@ -33,6 +36,14 @@ describe("WP repository test suite", () => {
     await repository.refetch();
   });
 
+  describe("getProcessedWPs", () => {
+    it("should filter wps using filter", () => {
+      jest.spyOn(filter, "filter").mockReturnValue([wp2, wp3]);
+      const wps = repository["getProcessedWPs"]();
+      expect(wps).toEqual([wp2, wp3]);
+    });
+  });
+
   describe("findById", () => {
     it("should return wp1", () => {
       expect(repository.findById(wp1.id)).toEqual(wp1);
@@ -54,6 +65,9 @@ describe("WP repository test suite", () => {
   });
 
   describe("findByParentId", () => {
+    beforeAll(() => {
+      jest.spyOn(filter, "filter").mockReturnValue([wp1, wp2, wp3, wp4]);
+    });
     it("should return children of wp1", () => {
       expect(repository.findByParentId(wp1.id)).toEqual([wp2, wp3]);
     });
@@ -66,6 +80,9 @@ describe("WP repository test suite", () => {
   });
 
   describe("findByProjectId", () => {
+    beforeAll(() => {
+      jest.spyOn(filter, "filter").mockReturnValue([wp1, wp2, wp3, wp4]);
+    });
     it("should return projects of project1", () => {
       expect(repository.findByProjectId(project1.id)).toEqual([wp1]);
     });
@@ -81,6 +98,9 @@ describe("WP repository test suite", () => {
   });
 
   describe("findAll", () => {
+    beforeAll(() => {
+      jest.spyOn(filter, "filter").mockReturnValue([wp1, wp2, wp3, wp4]);
+    });
     it("should return all wps", () => {
       expect(repository.findAll()).toEqual([wp1, wp2, wp3, wp4]);
     });

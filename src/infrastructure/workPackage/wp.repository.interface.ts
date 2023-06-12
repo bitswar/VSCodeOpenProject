@@ -7,5 +7,5 @@ export default interface WPRepository {
   findByProjectId(projectId: number): WP[];
   findAll(): WP[];
   refetch(): Promise<void>;
-  onWPsRefetch: Event<void>;
+  onWPsChange: Event<void>;
 }

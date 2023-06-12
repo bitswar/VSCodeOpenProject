@@ -29,12 +29,26 @@
           "dark": "resources/refresh_light.png",
           "light": "resources/refresh.png"
         }
+      },
+      {
+        "command": "openproject.setupFilter",
+        "title": "Filter work packages",
+        "shortTitle": "Filter",
+        "icon": {
+          "dark": "resources/filter_light.png",
+          "light": "resources/filter.png"
+        }
       }
     ],
     "menus": {
       "view/title": [
         {
           "command": "openproject.refresh",
+          "group": "navigation",
+          "when": "view == openproject-workspaces"
+        },
+        {
+          "command": "openproject.setupFilter",
           "group": "navigation",
           "when": "view == openproject-workspaces"
         }

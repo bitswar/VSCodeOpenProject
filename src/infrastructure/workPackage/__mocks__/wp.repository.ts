@@ -11,7 +11,7 @@ export default class WPRepositoryImpl implements WPRepository {
 
   refetch = jest.fn();
 
-  onWPsRefetch = jest.fn();
+  onWPsChange = jest.fn();
 
   findByProjectId = jest.fn();
 }

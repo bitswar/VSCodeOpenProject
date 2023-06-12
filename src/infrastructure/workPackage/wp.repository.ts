@@ -3,6 +3,7 @@ import { WP } from "op-client";
 import * as vscode from "vscode";
 import { Event } from "vscode";
 import TOKENS from "../../DI/tokens";
+import WPsFilter from "../../core/filter/wpsFilter.interface";
 import OpenProjectClient from "../openProject/openProject.client.interface";
 import WPRepository from "./wp.repository.interface";
 import WPNotFoundException from "./wpNotFount.exception";
@@ -11,14 +12,21 @@ import WPNotFoundException from "./wpNotFount.exception";
 export default class WPRepositoryImpl implements WPRepository {
   private _wps: WP[] = [];
 
-  private _onWPsRefetch: vscode.EventEmitter<void> =
+  private _onWPsChange: vscode.EventEmitter<void> =
     new vscode.EventEmitter<void>();
 
-  onWPsRefetch: Event<void> = this._onWPsRefetch.event;
+  onWPsChange: Event<void> = this._onWPsChange.event;
 
   constructor(
     @inject(TOKENS.opClient) private readonly _client: OpenProjectClient,
-  ) {}
+    @inject(TOKENS.compositeFilter) private readonly _filter: WPsFilter,
+  ) {
+    _filter.onFilterUpdated(() => this._onWPsChange.fire());
+  }
+
+  private getProcessedWPs(): WP[] {
+    return this._filter.filter(this._wps);
+  }
 
   findById(id: number): WP {
     const result = this._wps.find((wp) => wp.id === id);
@@ -27,21 +35,21 @@ export default class WPRepositoryImpl implements WPRepository {
   }
 
   findByParentId(parentId: number): WP[] {
-    return this._wps.filter((wp) => wp.parent?.id === parentId);
+    return this.getProcessedWPs().filter((wp) => wp.parent?.id === parentId);
   }
 
   findByProjectId(projectId: number): WP[] {
-    return this._wps.filter((wp) => wp.project.id === projectId);
+    return this.getProcessedWPs().filter((wp) => wp.project.id === projectId);
   }
 
   findAll(): WP[] {
-    return this._wps;
+    return this.getProcessedWPs();
   }
 
   refetch(): Promise<void> {
     return this._client.getWPs().then((wps) => {
       this._wps = wps;
-      this._onWPsRefetch.fire();
+      this._onWPsChange.fire();
     });
   }
 }

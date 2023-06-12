@@ -14,10 +14,7 @@ export default class TextWPsFilterImpl implements TextWPsFilter {
     const textFilterLower = this._textFilter.toLowerCase();
     return wps.filter(
       (wp) =>
-        wp.author.login.toLowerCase().includes(textFilterLower) ||
-        wp.author.firstName.toLowerCase().includes(textFilterLower) ||
-        wp.author.lastName.toLowerCase().includes(textFilterLower) ||
-        wp.author.name.toLowerCase().includes(textFilterLower) ||
+        wp.author.self.title?.toLowerCase().includes(textFilterLower) ||
         wp.subject.toLowerCase().includes(textFilterLower) ||
         wp.body.description?.raw.toLowerCase().includes(textFilterLower),
     );

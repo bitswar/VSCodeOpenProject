@@ -15,10 +15,7 @@ describe("WPs text filter test suite", () => {
     const helloWorldWP = {
       subject: "Hello world!",
       author: {
-        name: "goodhumored",
-        firstName: "Kirill",
-        lastName: "Nekrasov",
-        login: "goodhumored",
+        self: { title: "goodhumored" },
       },
       body: {
         description: {
@@ -28,39 +25,24 @@ describe("WPs text filter test suite", () => {
     } as WP;
     const easterEggWP = {
       subject: "Lorem ipsum!",
-      author: {
-        name: "goodhumored",
-        firstName: "Kirill",
-        lastName: "Nekrasov",
-        login: "goodhumored",
-      },
+      author: { self: { title: "goodhumored" } },
       body: {
-        description: {
-          raw: "Easter egg!",
-        },
+        description: { raw: "Easter egg!" },
       },
     } as WP;
     const dannyWP = {
       subject: "Title",
       author: {
-        name: "dannyweiss",
-        firstName: "Danila",
-        lastName: "Smolyakov",
-        login: "dannyweiss",
+        self: { title: "dannyweiss" },
       },
       body: {
-        description: {
-          raw: "Lorem ipsum",
-        },
+        description: { raw: "Lorem ipsum" },
       },
     } as WP;
     const bugWP = {
       subject: "Bug!",
       author: {
-        name: "Svante Kaiser",
-        firstName: "Sviat",
-        lastName: "Tsarev",
-        login: "svante_kaiser",
+        self: { title: "Svante Kaiser" },
       },
       body: {},
     } as WP;

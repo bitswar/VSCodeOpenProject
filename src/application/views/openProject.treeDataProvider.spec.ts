@@ -1,3 +1,4 @@
+/* eslint-disable no-new */
 jest.mock("../../infrastructure/project/project.repository");
 jest.mock("../../infrastructure/workPackage/wp.repository");
 
@@ -5,9 +6,12 @@ import { faker } from "@faker-js/faker";
 import { Project, WP } from "op-client";
 import container from "../../DI/container";
 import TOKENS from "../../DI/tokens";
+import OpenProjectClient from "../../infrastructure/openProject/openProject.client.interface";
 import ProjectRepository from "../../infrastructure/project/project.repository.interface";
 import WPRepository from "../../infrastructure/workPackage/wp.repository.interface";
 import OpenProjectTreeDataProviderImpl from "./openProject.treeDataProvider";
+import ProjectTreeItem from "./treeItems/project.treeItem";
+import WPTreeItem from "./treeItems/wp.treeItem";
 
 describe("OpenProjectTreeDataProvider", () => {
   const treeView = container.get<OpenProjectTreeDataProviderImpl>(
@@ -17,14 +21,50 @@ describe("OpenProjectTreeDataProvider", () => {
   const projectRepo = container.get<ProjectRepository>(
     TOKENS.projectRepository,
   );
+  const client = container.get<OpenProjectClient>(TOKENS.opClient);
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
+  describe("Constructor", () => {
+    it("should subscribe to wpRepo onWPsChange", () => {
+      jest.spyOn(wpRepo, "onWPsChange");
+
+      new OpenProjectTreeDataProviderImpl(wpRepo, projectRepo, client);
+
+      expect(wpRepo.onWPsChange).toHaveBeenCalled();
+    });
+    it("should subscribe to projectRepo onProjectsRefetch", () => {
+      jest.spyOn(projectRepo, "onProjectsRefetch");
+
+      new OpenProjectTreeDataProviderImpl(wpRepo, projectRepo, client);
+
+      expect(projectRepo.onProjectsRefetch).toHaveBeenCalled();
+    });
+    it("should subscribe to client onInit", () => {
+      jest.spyOn(client, "onInit");
+      new OpenProjectTreeDataProviderImpl(wpRepo, projectRepo, client);
+      expect(client.onInit).toHaveBeenCalled();
+    });
+  });
+
   describe("getTreeItem", () => {
-    it.todo("should return wp tree item");
-    it.todo("should return project tree item");
+    it("should return wp tree item", () => {
+      const wp = new WP(1);
+      const treeItem = treeView.getTreeItem(wp);
+      expect(treeItem).toBeInstanceOf(WPTreeItem);
+    });
+    it("should return project tree item", () => {
+      const project = new Project(1);
+      const treeItem = treeView.getTreeItem(project);
+      expect(treeItem).toBeInstanceOf(ProjectTreeItem);
+    });
+    it("should return empty object", () => {
+      const project = {};
+      const treeItem = treeView.getTreeItem(project as any);
+      expect(treeItem).toBeInstanceOf(Object);
+    });
   });
 
   describe("getChildren", () => {

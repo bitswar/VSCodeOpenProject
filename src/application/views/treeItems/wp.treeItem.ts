@@ -15,7 +15,7 @@ export default class WPTreeItem implements TreeItem {
   label?: string | TreeItemLabel | undefined;
 
   constructor(wp: WP) {
-    const iconPath = getIconPathByStatus(wp.status.self.title as WPStatus);
+    const iconPath = getIconPathByStatus(wp.status?.self.title as WPStatus);
     const type = wp.type?.self.title;
     let label = `#${wp.id} ${wp.subject}`;
     if (type) label += ` ${type}`;

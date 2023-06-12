@@ -27,11 +27,11 @@ export default class OpenProjectTreeDataProviderImpl
     @inject(TOKENS.opClient)
     _client: OpenProjectClient,
   ) {
-    _wpRepository.onWPsRefetch(() => this._onDidChangeTreeData.fire());
+    _wpRepository.onWPsChange(() => this._onDidChangeTreeData.fire());
     _projectRepository.onProjectsRefetch(() =>
       this._onDidChangeTreeData.fire(),
     );
-    _client.onInit(() => this.refresh());
+    _client.onInit(this.refresh, this);
   }
 
   getTreeItem(element: WP | Project): TreeItem {
