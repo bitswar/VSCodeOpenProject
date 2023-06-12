@@ -3,6 +3,7 @@ import { Project, WP } from "op-client";
 import * as vscode from "vscode";
 import { Event, ProviderResult, TreeItem } from "vscode";
 import TOKENS from "../../DI/tokens";
+import Filter from "../../core/filter/filter.interface";
 import OpenProjectClient from "../../infrastructure/openProject/openProject.client.interface";
 import ProjectRepository from "../../infrastructure/project/project.repository.interface";
 import WPRepository from "../../infrastructure/workPackage/wp.repository.interface";
@@ -24,11 +25,15 @@ export default class OpenProjectTreeDataProviderImpl
     private readonly _wpRepository: WPRepository,
     @inject(TOKENS.projectRepository)
     private readonly _projectRepository: ProjectRepository,
-    @inject(TOKENS.opClient)
-    _client: OpenProjectClient,
+    @inject(TOKENS.opClient) _client: OpenProjectClient,
+    @inject(TOKENS.compositeFilter) private readonly _wpFilter: Filter<WP>,
+    @inject(TOKENS.projectFilter)
+    private readonly _projectFilter: Filter<Project>,
   ) {
     _wpRepository.onWPsChange(() => this._onDidChangeTreeData.fire());
     _projectRepository.onProjectsChange(() => this._onDidChangeTreeData.fire());
+    _wpFilter.onFilterUpdated(() => this._onDidChangeTreeData.fire());
+    _projectFilter.onFilterUpdated(() => this._onDidChangeTreeData.fire());
     _client.onInit(this.refresh, this);
   }
 
@@ -42,12 +47,16 @@ export default class OpenProjectTreeDataProviderImpl
     parentElement?: WP | Project | undefined,
   ): ProviderResult<WP[] | Project[]> {
     if (!parentElement) {
-      return this._projectRepository.findAll();
+      return this._projectFilter.filter(this._projectRepository.findAll());
     }
     if (parentElement instanceof Project) {
-      return this._wpRepository.findByProjectId(parentElement.id);
+      return this._wpFilter.filter(
+        this._wpRepository.findByProjectId(parentElement.id),
+      );
     }
-    return this._wpRepository.findByParentId(parentElement.id);
+    return this._wpFilter.filter(
+      this._wpRepository.findByParentId(parentElement.id),
+    );
   }
 
   getParent(element: WP | Project): ProviderResult<WP | Project | undefined> {

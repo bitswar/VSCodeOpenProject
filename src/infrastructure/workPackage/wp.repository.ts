@@ -3,7 +3,6 @@ import { WP } from "op-client";
 import * as vscode from "vscode";
 import { Event } from "vscode";
 import TOKENS from "../../DI/tokens";
-import Filter from "../../core/filter/filter.interface";
 import OpenProjectClient from "../openProject/openProject.client.interface";
 import WPRepository from "./wp.repository.interface";
 import WPNotFoundException from "./wpNotFount.exception";
@@ -19,14 +18,7 @@ export default class WPRepositoryImpl implements WPRepository {
 
   constructor(
     @inject(TOKENS.opClient) private readonly _client: OpenProjectClient,
-    @inject(TOKENS.compositeFilter) private readonly _filter: Filter<WP>,
-  ) {
-    _filter.onFilterUpdated(() => this._onWPsChange.fire());
-  }
-
-  private getProcessedWPs(): WP[] {
-    return this._filter.filter(this._wps);
-  }
+  ) {}
 
   findById(id: number): WP {
     const result = this._wps.find((wp) => wp.id === id);
@@ -35,15 +27,15 @@ export default class WPRepositoryImpl implements WPRepository {
   }
 
   findByParentId(parentId: number): WP[] {
-    return this.getProcessedWPs().filter((wp) => wp.parent?.id === parentId);
+    return this._wps.filter((wp) => wp.parent?.id === parentId);
   }
 
   findByProjectId(projectId: number): WP[] {
-    return this.getProcessedWPs().filter((wp) => wp.project.id === projectId);
+    return this._wps.filter((wp) => wp.project.id === projectId);
   }
 
   findAll(): WP[] {
-    return this.getProcessedWPs();
+    return this._wps;
   }
 
   refetch(): Promise<void> {

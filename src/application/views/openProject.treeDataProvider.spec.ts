@@ -6,6 +6,7 @@ import { faker } from "@faker-js/faker";
 import { Project, WP } from "op-client";
 import container from "../../DI/container";
 import TOKENS from "../../DI/tokens";
+import Filter from "../../core/filter/filter.interface";
 import OpenProjectClient from "../../infrastructure/openProject/openProject.client.interface";
 import ProjectRepository from "../../infrastructure/project/project.repository.interface";
 import WPRepository from "../../infrastructure/workPackage/wp.repository.interface";
@@ -22,6 +23,8 @@ describe("OpenProjectTreeDataProvider", () => {
     TOKENS.projectRepository,
   );
   const client = container.get<OpenProjectClient>(TOKENS.opClient);
+  const wpFilter = container.get<Filter<WP>>(TOKENS.compositeFilter);
+  const projectFilter = container.get<Filter<Project>>(TOKENS.projectFilter);
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -31,21 +34,61 @@ describe("OpenProjectTreeDataProvider", () => {
     it("should subscribe to wpRepo onWPsChange", () => {
       jest.spyOn(wpRepo, "onWPsChange");
 
-      new OpenProjectTreeDataProviderImpl(wpRepo, projectRepo, client);
+      new OpenProjectTreeDataProviderImpl(
+        wpRepo,
+        projectRepo,
+        client,
+        wpFilter,
+        projectFilter,
+      );
 
       expect(wpRepo.onWPsChange).toHaveBeenCalled();
     });
     it("should subscribe to projectRepo onProjectsRefetch", () => {
       jest.spyOn(projectRepo, "onProjectsChange");
 
-      new OpenProjectTreeDataProviderImpl(wpRepo, projectRepo, client);
+      new OpenProjectTreeDataProviderImpl(
+        wpRepo,
+        projectRepo,
+        client,
+        wpFilter,
+        projectFilter,
+      );
 
       expect(projectRepo.onProjectsChange).toHaveBeenCalled();
     });
     it("should subscribe to client onInit", () => {
       jest.spyOn(client, "onInit");
-      new OpenProjectTreeDataProviderImpl(wpRepo, projectRepo, client);
+      new OpenProjectTreeDataProviderImpl(
+        wpRepo,
+        projectRepo,
+        client,
+        wpFilter,
+        projectFilter,
+      );
       expect(client.onInit).toHaveBeenCalled();
+    });
+    it("should subscribe to wpFilter onFilterUpdated", () => {
+      jest.spyOn(wpFilter, "onFilterUpdated");
+      new OpenProjectTreeDataProviderImpl(
+        wpRepo,
+        projectRepo,
+        client,
+        wpFilter,
+        projectFilter,
+      );
+      expect(wpFilter.onFilterUpdated).toHaveBeenCalled();
+    });
+    it("should subscribe to projectFilter onFilterUpdated", () => {
+      jest.spyOn(projectFilter, "onFilterUpdated");
+      new OpenProjectTreeDataProviderImpl(
+        wpRepo,
+        projectRepo,
+        client,
+        wpFilter,
+        projectFilter,
+      );
+      expect(projectFilter.onFilterUpdated).toHaveBeenCalled();
     });
   });
 
