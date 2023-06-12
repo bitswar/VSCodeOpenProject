@@ -3,7 +3,7 @@ import { WP } from "op-client";
 import * as vscode from "vscode";
 import { Event } from "vscode";
 import TOKENS from "../../DI/tokens";
-import WPsFilter from "../../core/filter/wpsFilter.interface";
+import Filter from "../../core/filter/filter.interface";
 import OpenProjectClient from "../openProject/openProject.client.interface";
 import WPRepository from "./wp.repository.interface";
 import WPNotFoundException from "./wpNotFount.exception";
@@ -19,7 +19,7 @@ export default class WPRepositoryImpl implements WPRepository {
 
   constructor(
     @inject(TOKENS.opClient) private readonly _client: OpenProjectClient,
-    @inject(TOKENS.compositeFilter) private readonly _filter: WPsFilter,
+    @inject(TOKENS.compositeFilter) private readonly _filter: Filter<WP>,
   ) {
     _filter.onFilterUpdated(() => this._onWPsChange.fire());
   }

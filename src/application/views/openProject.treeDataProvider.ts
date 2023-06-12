@@ -28,9 +28,7 @@ export default class OpenProjectTreeDataProviderImpl
     _client: OpenProjectClient,
   ) {
     _wpRepository.onWPsChange(() => this._onDidChangeTreeData.fire());
-    _projectRepository.onProjectsRefetch(() =>
-      this._onDidChangeTreeData.fire(),
-    );
+    _projectRepository.onProjectsChange(() => this._onDidChangeTreeData.fire());
     _client.onInit(this.refresh, this);
   }
 

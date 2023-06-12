@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import { WP } from "op-client";
 import container from "../../../DI/container";
 import TOKENS from "../../../DI/tokens";
-import WPsFilter from "../wpsFilter.interface";
+import Filter from "../filter.interface";
 import CompositeWPsFilterImpl from "./composite.wpsFilter";
 
 describe("WPs composite filter test suite", () => {
@@ -15,7 +15,7 @@ describe("WPs composite filter test suite", () => {
   });
 
   describe("filter", () => {
-    let mockedFilters: WPsFilter[];
+    let mockedFilters: Filter<WP>[];
     let mockedWPs: WP[];
 
     beforeAll(() => {
@@ -61,7 +61,7 @@ describe("WPs composite filter test suite", () => {
 
   describe("pushFilter", () => {
     it("should add filter to list", () => {
-      const filter: WPsFilter = {
+      const filter: Filter<WP> = {
         filter: jest.fn(),
         onFilterUpdated: jest.fn(),
       };
@@ -72,7 +72,7 @@ describe("WPs composite filter test suite", () => {
     });
     it("should subscribe to filters onFilterChange", () => {
       const onFilterUpdatedMocked = jest.fn();
-      const filter: WPsFilter = {
+      const filter: Filter<WP> = {
         filter: jest.fn(),
         onFilterUpdated: onFilterUpdatedMocked,
       };

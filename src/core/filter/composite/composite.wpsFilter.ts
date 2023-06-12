@@ -1,12 +1,12 @@
 import { injectable } from "inversify";
 import { WP } from "op-client";
 import * as vscode from "vscode";
-import WPsFilter from "../wpsFilter.interface";
+import Filter from "../filter.interface";
 import CompositeWPsFilter from "./composite.wpsFilter.interface";
 
 @injectable()
 export default class CompositeWPsFilterImpl implements CompositeWPsFilter {
-  private _filters: WPsFilter[] = [];
+  private _filters: Filter<WP>[] = [];
 
   private _onFilterUpdated: vscode.EventEmitter<void> =
     new vscode.EventEmitter<void>();
@@ -21,7 +21,7 @@ export default class CompositeWPsFilterImpl implements CompositeWPsFilter {
     return filteredWps;
   }
 
-  pushFilter(filter: WPsFilter): void {
+  pushFilter(filter: Filter<WP>): void {
     this._filters.push(filter);
     filter.onFilterUpdated(() => this._onFilterUpdated.fire());
   }

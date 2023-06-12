@@ -1,4 +1,4 @@
-jest.mock("../../../core/filter/project/project.wpsFilter");
+jest.mock("../../../core/filter/project/project.filter");
 jest.mock("../../../core/filter/status/status.wpsFilter");
 jest.mock("../../../core/filter/text/text.wpsFilter");
 jest.mock("../../../infrastructure/project/project.repository");
@@ -8,18 +8,18 @@ import { Project } from "op-client";
 import container from "../../../DI/container";
 import TOKENS from "../../../DI/tokens";
 import * as vscode from "../../../__mocks__/vscode";
-import ProjectWPsFilter from "../../../core/filter/project/project.wpsFilter.interface";
+import ProjectsFilter from "../../../core/filter/project/project.filter.interface";
 import StatusWPsFilter from "../../../core/filter/status/status.wpsFilter.interface";
 import TextWPsFilter from "../../../core/filter/text/text.wpsFilter.interface";
 import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 import ProjectRepository from "../../../infrastructure/project/project.repository.interface";
-import SetupFiltersCommandImpl, { PayloadItem } from "./setupFilters.command";
+import SetupFiltersCommandImpl from "./setupFilters.command";
 
 describe("filter WPs command test suite", () => {
   let command: SetupFiltersCommandImpl;
   const textFilter = container.get<TextWPsFilter>(TOKENS.textFilter);
   const statusFilter = container.get<StatusWPsFilter>(TOKENS.statusFilter);
-  const projectFilter = container.get<ProjectWPsFilter>(TOKENS.projectFilter);
+  const projectFilter = container.get<ProjectsFilter>(TOKENS.projectFilter);
   const projectRepo = container.get<ProjectRepository>(
     TOKENS.projectRepository,
   );

@@ -1,3 +1,4 @@
+import { WP } from "op-client";
 import * as vscode from "vscode";
 import container from "./DI/container";
 import TOKENS from "./DI/tokens";
@@ -6,7 +7,7 @@ import SetupFiltersCommand from "./application/commands/filter/setupFilters.comm
 import RefreshWPsCommand from "./application/commands/refresh/refreshWPsCommand.interface";
 import OpenProjectTreeDataProvider from "./application/views/openProject.treeDataProvider";
 import CompositeWPsFilter from "./core/filter/composite/composite.wpsFilter.interface";
-import WPsFilter from "./core/filter/wpsFilter.interface";
+import Filter from "./core/filter/filter.interface";
 
 export function activate(context: vscode.ExtensionContext) {
   composeFilters();
@@ -54,11 +55,9 @@ function composeFilters() {
   const compositeFilter = container.get<CompositeWPsFilter>(
     TOKENS.compositeFilter,
   );
-  const textFilter = container.get<WPsFilter>(TOKENS.textFilter);
-  const projectFilter = container.get<WPsFilter>(TOKENS.projectFilter);
-  const statusFilter = container.get<WPsFilter>(TOKENS.statusFilter);
+  const textFilter = container.get<Filter<WP>>(TOKENS.textFilter);
+  const statusFilter = container.get<Filter<WP>>(TOKENS.statusFilter);
   compositeFilter.pushFilter(textFilter);
-  compositeFilter.pushFilter(projectFilter);
   compositeFilter.pushFilter(statusFilter);
 }
 

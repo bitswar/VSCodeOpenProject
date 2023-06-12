@@ -1,5 +1,6 @@
-import WPsFilter from "../wpsFilter.interface";
+import { WP } from "op-client";
+import Filter from "../filter.interface";
 
-export default interface CompositeWPsFilter extends WPsFilter {
-  pushFilter(filter: WPsFilter): void;
+export default interface CompositeWPsFilter extends Filter<WP> {
+  pushFilter(filter: Filter<WP>): void;
 }

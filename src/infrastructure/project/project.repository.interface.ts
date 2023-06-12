@@ -5,5 +5,5 @@ export default interface ProjectRepository {
   findById(id: number): Project;
   findAll(): Project[];
   refetch(): Promise<void>;
-  onProjectsRefetch: Event<void>;
+  onProjectsChange: Event<void>;
 }

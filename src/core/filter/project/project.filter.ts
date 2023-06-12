@@ -1,20 +1,19 @@
 import { injectable } from "inversify";
-import { WP } from "op-client";
+import { Project } from "op-client";
 import * as vscode from "vscode";
-import ProjectWPsFilter from "./project.wpsFilter.interface";
+import ProjectsFilter from "./project.filter.interface";
 
 @injectable()
-export default class ProjectWPsFilterImpl implements ProjectWPsFilter {
+export default class ProjectsFilterImpl implements ProjectsFilter {
   private _projectIds?: number[] = undefined;
 
   private _onFilterUpdated: vscode.EventEmitter<void> =
     new vscode.EventEmitter<void>();
 
-  filter(wps: WP[]): WP[] {
-    return wps.filter(
-      (wp) =>
-        this._projectIds === undefined ||
-        this._projectIds.includes(wp.project.id),
+  filter(projects: Project[]): Project[] {
+    return projects.filter(
+      (project) =>
+        this._projectIds === undefined || this._projectIds.includes(project.id),
     );
   }
 

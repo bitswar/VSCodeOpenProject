@@ -36,11 +36,11 @@ describe("OpenProjectTreeDataProvider", () => {
       expect(wpRepo.onWPsChange).toHaveBeenCalled();
     });
     it("should subscribe to projectRepo onProjectsRefetch", () => {
-      jest.spyOn(projectRepo, "onProjectsRefetch");
+      jest.spyOn(projectRepo, "onProjectsChange");
 
       new OpenProjectTreeDataProviderImpl(wpRepo, projectRepo, client);
 
-      expect(projectRepo.onProjectsRefetch).toHaveBeenCalled();
+      expect(projectRepo.onProjectsChange).toHaveBeenCalled();
     });
     it("should subscribe to client onInit", () => {
       jest.spyOn(client, "onInit");

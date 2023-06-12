@@ -9,7 +9,7 @@ export default class ProjectRepositoryImpl implements ProjectRepository {
 
   refetch = jest.fn();
 
-  onProjectsRefetch = jest.fn();
+  onProjectsChange = jest.fn();
 
   penis = "asd";
 }

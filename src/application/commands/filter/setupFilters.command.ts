@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import * as vscode from "vscode";
 import TOKENS from "../../../DI/tokens";
-import ProjectWPsFilter from "../../../core/filter/project/project.wpsFilter.interface";
+import ProjectsFilter from "../../../core/filter/project/project.filter.interface";
 import StatusWPsFilter from "../../../core/filter/status/status.wpsFilter.interface";
 import TextWPsFilter from "../../../core/filter/text/text.wpsFilter.interface";
 import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
@@ -19,7 +19,7 @@ export default class SetupFiltersCommandImpl implements SetupFiltersCommand {
   constructor(
     @inject(TOKENS.textFilter) private readonly _textFilter: TextWPsFilter,
     @inject(TOKENS.projectFilter)
-    private readonly _projectFilter: ProjectWPsFilter,
+    private readonly _projectFilter: ProjectsFilter,
     @inject(TOKENS.statusFilter)
     private readonly _statusFilter: StatusWPsFilter,
     @inject(TOKENS.projectRepository)

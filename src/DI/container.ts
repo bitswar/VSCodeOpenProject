@@ -10,8 +10,8 @@ import OpenProjectTreeDataProviderImpl from "../application/views/openProject.tr
 import OpenProjectTreeDataProvider from "../application/views/openProjectTreeDataProvider.interface";
 import CompositeWPsFilterImpl from "../core/filter/composite/composite.wpsFilter";
 import CompositeWPsFilter from "../core/filter/composite/composite.wpsFilter.interface";
-import ProjectWPsFilterImpl from "../core/filter/project/project.wpsFilter";
-import ProjectWPsFilter from "../core/filter/project/project.wpsFilter.interface";
+import ProjectsFilterImpl from "../core/filter/project/project.filter";
+import ProjectsFilter from "../core/filter/project/project.filter.interface";
 import StatusWPsFilterImpl from "../core/filter/status/status.wpsFilter";
 import StatusWPsFilter from "../core/filter/status/status.wpsFilter.interface";
 import TextWPsFilterImpl from "../core/filter/text/text.wpsFilter";
@@ -54,8 +54,8 @@ container
   .inSingletonScope();
 
 container
-  .bind<ProjectWPsFilter>(TOKENS.projectFilter)
-  .to(ProjectWPsFilterImpl)
+  .bind<ProjectsFilter>(TOKENS.projectFilter)
+  .to(ProjectsFilterImpl)
   .inSingletonScope();
 
 container

@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
-import ProjectWPsFilter from "../project.wpsFilter.interface";
+import ProjectsFilter from "../project.filter.interface";
 
 @injectable()
-export default class ProjectWPsFilterImpl implements ProjectWPsFilter {
+export default class ProjectsFilterImpl implements ProjectsFilter {
   filter = jest.fn();
 
   onFilterUpdated = jest.fn();
