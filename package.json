@@ -19,25 +19,26 @@
       {
         "command": "openproject.auth",
         "title": "Authorize",
-        "shortTitle": "Auth"
+        "shortTitle": "Auth",
+        "icon": "$(account)"
       },
       {
         "command": "openproject.refresh",
         "title": "Refresh work packages",
         "shortTitle": "Refresh",
-        "icon": {
-          "dark": "resources/refresh_light.png",
-          "light": "resources/refresh.png"
-        }
+        "icon": "$(sync)"
       },
       {
         "command": "openproject.setupFilter",
         "title": "Filter work packages",
         "shortTitle": "Filter",
-        "icon": {
-          "dark": "resources/filter_light.png",
-          "light": "resources/filter.png"
-        }
+        "icon": "$(filter)"
+      },
+      {
+        "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
+        "title": "Collapse all",
+        "shortTitle": "Collapse",
+        "icon": "$(collapse-all)"
       }
     ],
     "menus": {
@@ -49,6 +50,11 @@
         },
         {
           "command": "openproject.setupFilter",
+          "group": "navigation",
+          "when": "view == openproject-workspaces"
+        },
+        {
+          "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
           "group": "navigation",
           "when": "view == openproject-workspaces"
         }
