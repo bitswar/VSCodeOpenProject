@@ -1,6 +1,6 @@
 import { Project } from "op-client";
 import * as vscode from "vscode";
-import ProjectQuickPickItem from "../../commands/filter/quickPickItems/project.quickPickItem";
+import ProjectQuickPickItem from "./project.quickPickItem";
 
 export default class ProjectQuickPick<T extends true | false> {
   private readonly _items: ProjectQuickPickItem[];
