@@ -1,5 +1,5 @@
 import { QuickPickItem } from "vscode";
-import WPStatus from "../../../../infrastructure/openProject/wpStatus.enum";
+import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 
 export default class WPStatusQuickPickItem implements QuickPickItem {
   label: string;

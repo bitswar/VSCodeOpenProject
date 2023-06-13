@@ -6,11 +6,11 @@ import StatusWPsFilter from "../../../core/filter/status/status.wpsFilter.interf
 import TextWPsFilter from "../../../core/filter/text/text.wpsFilter.interface";
 import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 import ProjectRepository from "../../../infrastructure/project/project.repository.interface";
-import ProjectQuickPickItem from "./quickPickItems/project.quickPickItem";
-import WPStatusQuickPickItem from "./quickPickItems/wpStatus.quickPickItem";
+import ProjectQuickPick from "../../quickPicks/project/project.quickPick";
+import WPStatusQuickPick from "../../quickPicks/wpStatus/wpStatus.quickPick";
 import SetupFiltersCommand from "./setupFilters.command.interface";
 
-export type PayloadItem<T = unknown> = vscode.QuickPickItem & {
+type PayloadItem<T = unknown> = vscode.QuickPickItem & {
   payload: T;
 };
 
@@ -58,45 +58,30 @@ export default class SetupFiltersCommandImpl implements SetupFiltersCommand {
   }
 
   async setupProjectFilter() {
-    const items = this.getProjectIdQuickPickItems();
-    const results = await vscode.window.showQuickPick(items, {
-      canPickMany: true,
-      title: "Select wps of which projects you want to see: ",
-    });
-    const projectIds = (results ?? items).map((item) => item.projectId);
-    this._projectFilter.setProjectFilter(projectIds);
+    const projects = this._projectRepo.findAll();
+    const oldProjectIds =
+      this._projectFilter.getProjectFilter() ?? projects.map((p) => p.id);
+    const quickPick = new ProjectQuickPick(
+      "Select wps of which projects you want to see: ",
+      projects,
+      true,
+    );
+    quickPick.setPickedProjects(oldProjectIds);
+    const projectIds = await quickPick.show();
+    this._projectFilter.setProjectFilter(projectIds ?? oldProjectIds);
   }
 
   async setupStatusFilter() {
-    const items = this.getStatusQuickPickItems();
-    const results = await vscode.window.showQuickPick(items, {
-      canPickMany: true,
-      title: "Select wps of which status you want to see: ",
-    });
-    const statuses = (results ?? items).map((item) => item.status);
-    this._statusFilter.setStatusFilter(statuses);
-  }
-
-  getProjectIdQuickPickItems(): ProjectQuickPickItem[] {
-    const filter = this._projectFilter.getProjectFilter();
-    const projects = this._projectRepo.findAll();
-    return projects.map(
-      (project) =>
-        new ProjectQuickPickItem(
-          project,
-          filter === undefined || filter.includes(project.id),
-        ),
-    );
-  }
-
-  getStatusQuickPickItems(): WPStatusQuickPickItem[] {
+    const statuses = Object.values(WPStatus);
     const filter = this._statusFilter.getStatusFilter();
-    return Object.values(WPStatus).map(
-      (status) =>
-        new WPStatusQuickPickItem(
-          status,
-          filter === undefined || filter.includes(status),
-        ),
+    const quickPick = new WPStatusQuickPick(
+      "Select wps of which status you want to see: ",
+      true,
     );
+    quickPick.setPickedStatuses(filter ?? statuses);
+
+    const result = await quickPick.show();
+
+    this._statusFilter.setStatusFilter(result ?? statuses);
   }
 }

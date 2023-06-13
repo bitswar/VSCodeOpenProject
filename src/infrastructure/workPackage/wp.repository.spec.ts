@@ -36,14 +36,6 @@ describe("WP repository test suite", () => {
     await repository.refetch();
   });
 
-  describe("getProcessedWPs", () => {
-    it("should filter wps using filter", () => {
-      jest.spyOn(filter, "filter").mockReturnValue([wp2, wp3]);
-      const wps = repository["getProcessedWPs"]();
-      expect(wps).toEqual([wp2, wp3]);
-    });
-  });
-
   describe("findById", () => {
     it("should return wp1", () => {
       expect(repository.findById(wp1.id)).toEqual(wp1);

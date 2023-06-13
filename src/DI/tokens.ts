@@ -7,6 +7,7 @@ const comandTokens = {
   refreshWPsCommand: Symbol.for("RefreshWPsCommand"),
   authorizeCommand: Symbol.for("AuthorizeClientCommand"),
   setupFiltersCommand: Symbol.for("FilterWPsCommand"),
+  setWPStatusCommand: Symbol.for("SetWPStatusCommand"),
 };
 
 const filterTokens = {
