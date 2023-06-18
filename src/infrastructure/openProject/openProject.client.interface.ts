@@ -1,4 +1,4 @@
-import { Project, User, WP } from "op-client";
+import { Project, Status, User, WP } from "op-client";
 import * as vscode from "vscode";
 
 export default interface OpenProjectClient {
@@ -6,6 +6,9 @@ export default interface OpenProjectClient {
   getUser(): Promise<User>;
   getWPs(): Promise<WP[]>;
   getProjects(): Promise<Project[]>;
+  getStatuses(): Promise<Status[]>;
+
+  save(wp: WP): Promise<WP>;
 
   onInit: vscode.Event<void>;
 }
