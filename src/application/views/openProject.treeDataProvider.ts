@@ -7,7 +7,7 @@ import Filter from "../../core/filter/filter.interface";
 import OpenProjectClient from "../../infrastructure/openProject/openProject.client.interface";
 import ProjectRepository from "../../infrastructure/project/project.repository.interface";
 import WPRepository from "../../infrastructure/workPackage/wp.repository.interface";
-import OpenProjectTreeDataProvider from "./openProjectTreeDataProvider.interface";
+import OpenProjectTreeDataProvider from "./openProject.treeDataProvider.interface";
 import ProjectTreeItem from "./treeItems/project.treeItem";
 import WPTreeItem from "./treeItems/wp.treeItem";
 
@@ -74,5 +74,9 @@ export default class OpenProjectTreeDataProviderImpl
       this._wpRepository.refetch(),
       this._projectRepository.refetch(),
     ]).then();
+  }
+
+  redraw() {
+    this._onDidChangeTreeData.fire();
   }
 }

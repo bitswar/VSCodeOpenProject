@@ -4,4 +4,5 @@ import { TreeDataProvider } from "vscode";
 export default interface OpenProjectTreeDataProvider
   extends TreeDataProvider<WP | Project> {
   refresh(): Promise<void>;
+  redraw(): void;
 }

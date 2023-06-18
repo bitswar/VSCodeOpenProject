@@ -192,4 +192,11 @@ describe("OpenProjectTreeDataProvider", () => {
       expect(projectRepo.refetch).toHaveBeenCalled();
     });
   });
+  describe("redraw", () => {
+    it("should fire onDataChangeEvent", () => {
+      jest.spyOn(treeView["_onDidChangeTreeData"], "fire");
+      treeView.redraw();
+      expect(treeView["_onDidChangeTreeData"].fire).toHaveBeenCalled();
+    });
+  });
 });
