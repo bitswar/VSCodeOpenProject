@@ -12,25 +12,39 @@ export default class WPTreeItem implements TreeItem {
 
   iconPath?: string | Uri;
 
-  label?: string | TreeItemLabel | undefined;
+  label: string | TreeItemLabel;
 
   constructor(wp: WP) {
-    const iconPath = getIconPathByStatus(wp.status?.self.title as WPStatus);
-    const type = wp.type?.self.title;
-    let label = `#${wp.id} ${wp.subject}`;
+    this.label = this.resolveLabel(wp.id, wp.subject, wp.type?.self.title);
+    this.collapsibleState = this.resolveCollapsibleState(wp);
+    this.iconPath = this.resolveIcon(wp.status?.self.title as WPStatus);
+  }
+
+  private resolveLabel(
+    id: number,
+    subject: string,
+    type?: string,
+  ): TreeItemLabel {
+    let label = `#${id} ${subject}`;
     if (type) label += ` ${type}`;
-    this.label = {
+    return {
       label,
       highlights: [
-        [0, Math.floor(Math.log10(Math.abs(wp.id))) + 2],
+        [0, Math.floor(Math.log10(Math.abs(id))) + 2],
         [label.length - (type?.length ?? 0), label.length],
       ],
     };
-    this.collapsibleState =
-      wp.children?.length > 0
-        ? vscode.TreeItemCollapsibleState.Collapsed
-        : vscode.TreeItemCollapsibleState.None;
-    this.iconPath = iconPath
+  }
+
+  private resolveCollapsibleState(wp: WP): TreeItemCollapsibleState {
+    return wp.children?.length > 0
+      ? vscode.TreeItemCollapsibleState.Collapsed
+      : vscode.TreeItemCollapsibleState.None;
+  }
+
+  private resolveIcon(status: WPStatus): Uri | undefined {
+    const iconPath = getIconPathByStatus(status);
+    return iconPath
       ? vscode.Uri.file(path.join(__dirname, iconPath))
       : undefined;
   }
