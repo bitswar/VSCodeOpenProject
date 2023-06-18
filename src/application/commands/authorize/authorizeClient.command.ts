@@ -32,9 +32,7 @@ export default class AuthorizeClientCommandImpl
     return this._client
       .getUser()
       .then((user) => {
-        vscode.window.showInformationMessage(
-          `Hello, ${user.firstName} ${user.lastName}!`,
-        );
+        vscode.window.showInformationMessage(`Hello, ${user.name}!`);
       })
       .catch((err) => {
         this._logger.error("Failed connecting to OpenProject: ", err);

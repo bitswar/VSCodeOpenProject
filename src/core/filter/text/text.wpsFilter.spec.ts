@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { WP } from "op-client";
+import { User, WP } from "op-client";
 import container from "../../../DI/container";
 import TOKENS from "../../../DI/tokens";
 import TextWPsFilterImpl from "./text.wpsFilter";
@@ -15,7 +15,7 @@ describe("WPs text filter test suite", () => {
     const helloWorldWP = {
       subject: "Hello world!",
       author: {
-        self: { title: "goodhumored" },
+        name: "goodhumored",
       },
       body: {
         description: {
@@ -25,7 +25,7 @@ describe("WPs text filter test suite", () => {
     } as WP;
     const easterEggWP = {
       subject: "Lorem ipsum!",
-      author: { self: { title: "goodhumored" } },
+      author: { name: "goodhumored" },
       body: {
         description: { raw: "Easter egg!" },
       },
@@ -33,7 +33,8 @@ describe("WPs text filter test suite", () => {
     const dannyWP = {
       subject: "Title",
       author: {
-        self: { title: "dannyweiss" },
+        name: "dannyweiss",
+        login: "dannyweiss",
       },
       body: {
         description: { raw: "Lorem ipsum" },
@@ -41,9 +42,7 @@ describe("WPs text filter test suite", () => {
     } as WP;
     const bugWP = {
       subject: "Bug!",
-      author: {
-        self: { title: undefined },
-      },
+      author: new User(1),
       body: {},
     } as WP;
 

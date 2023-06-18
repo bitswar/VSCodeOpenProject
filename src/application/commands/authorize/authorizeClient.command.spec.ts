@@ -6,11 +6,11 @@ import { User } from "op-client";
 import container from "../../../DI/container";
 import TOKENS from "../../../DI/tokens";
 import * as vscode from "../../../__mocks__/vscode";
+import ConsoleLogger from "../../../infrastructure/logger/logger";
 import OpenProjectClient from "../../../infrastructure/openProject/openProject.client";
 import UserNotFound from "../../../infrastructure/openProject/userNotFound.exception";
 import VSCodeConfigMock from "../../../test/config.mock";
 import AuthorizeClientCommandImpl from "./authorizeClient.command";
-import ConsoleLogger from "../../../infrastructure/logger/logger";
 
 describe("Authorize client command test suite", () => {
   let command: AuthorizeClientCommandImpl;
@@ -83,8 +83,7 @@ describe("Authorize client command test suite", () => {
   describe("showMessage", () => {
     it("should show message 'Hello' on success", async () => {
       const user = new User(1);
-      user.firstName = faker.person.firstName();
-      user.lastName = faker.person.lastName();
+      user.name = `${faker.person.firstName()} ${faker.person.lastName()}`;
 
       jest.spyOn(vscode.window, "showInformationMessage");
       jest.spyOn(client, "getUser").mockResolvedValue(user);
@@ -92,7 +91,7 @@ describe("Authorize client command test suite", () => {
       await command.showMessage();
 
       expect(vscode.window.showInformationMessage).toHaveBeenLastCalledWith(
-        `Hello, ${user.firstName} ${user.lastName}!`,
+        `Hello, ${user.name}!`,
       );
     });
     it("should show error message", async () => {
