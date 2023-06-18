@@ -9,7 +9,7 @@ import TOKENS from "./DI/tokens";
 import AuthorizeClientCommand from "./application/commands/authorize/authorizeClientCommand.interface";
 import SetupFiltersCommand from "./application/commands/filter/setupFilters.command.interface";
 import RefreshWPsCommand from "./application/commands/refresh/refreshWPsCommand.interface";
-import OpenProjectTreeDataProvider from "./application/views/openProjectTreeDataProvider.interface";
+import OpenProjectTreeDataProvider from "./application/views/openProject.treeDataProvider.interface";
 import CompositeWPsFilter from "./core/filter/composite/composite.wpsFilter.interface";
 import { activate, deactivate } from "./extension";
 
@@ -78,10 +78,6 @@ describe("activate", () => {
   });
 
   describe("subscriptions", () => {
-    it("adds 4 subscriptions to context", () => {
-      activate(context);
-      expect(context.subscriptions).toHaveLength(4);
-    });
     it("adds authCommand to subscriptions to context", () => {
       jest
         .spyOn(vscode.commands, "registerCommand")

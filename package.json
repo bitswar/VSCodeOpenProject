@@ -35,6 +35,12 @@
         "icon": "$(filter)"
       },
       {
+        "command": "openproject.wp.setStatus",
+        "title": "Set workspace status",
+        "shortTitle": "Set status",
+        "icon": "$(tasklist)"
+      },
+      {
         "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
         "title": "Collapse all",
         "shortTitle": "Collapse",
@@ -56,6 +62,13 @@
         {
           "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
           "group": "navigation",
+          "when": "view == openproject-workspaces"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "openproject.wp.setStatus",
+          "group": "inline",
           "when": "view == openproject-workspaces"
         }
       ]
