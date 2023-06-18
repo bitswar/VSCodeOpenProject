@@ -1,12 +1,11 @@
 jest.mock("../logger/logger");
 
 import { faker } from "@faker-js/faker";
-import { Project, User, WP } from "op-client";
+import { Project, Status, User, WP } from "op-client";
 import "reflect-metadata";
 import container from "../../DI/container";
 import TOKENS from "../../DI/tokens";
 import ConsoleLogger from "../logger/logger";
-import Logger from "../logger/logger.interface";
 import ClientNotInitializedException from "./clientNotInitialized.exception";
 import OpenProjectClientImpl from "./openProject.client";
 import UnexceptedClientException from "./unexpectedClientError.exception";
@@ -16,17 +15,16 @@ jest.mock("op-client");
 
 describe("OpenProject Client tests", () => {
   let client: OpenProjectClientImpl;
-  let logger: Logger;
 
   beforeEach(() => {
     jest.clearAllMocks();
     client = container.get<OpenProjectClientImpl>(TOKENS.opClient);
-    logger = container.get<Logger>(TOKENS.logger);
 
     client["_entityManager"] = {
       fetch: jest.fn(),
       get: jest.fn(),
       getMany: jest.fn(),
+      patch: jest.fn(),
     } as any;
   });
 
@@ -171,6 +169,32 @@ describe("OpenProject Client tests", () => {
       const result = `http://apikey:${token}@google.com/`;
 
       expect(client["addTokenToUrl"](url, token)).toBe(result);
+    });
+  });
+
+  describe("Save", () => {
+    it("should call entityManager.patch", async () => {
+      const wp = new WP(1);
+      jest.spyOn(client["_entityManager"]!, "patch");
+
+      await client.save(wp);
+
+      expect(client["_entityManager"]?.patch).toHaveBeenCalledWith(wp);
+    });
+  });
+
+  describe("GetStatuses", () => {
+    it("should return statuses from entityManager getMany", async () => {
+      const statuses = faker.helpers.uniqueArray(
+        () => new Status(faker.number.int()),
+        5,
+      );
+
+      jest
+        .spyOn(client["_entityManager"]!, "getMany")
+        .mockResolvedValueOnce(statuses);
+
+      expect(await client.getStatuses()).toEqual(statuses);
     });
   });
 });

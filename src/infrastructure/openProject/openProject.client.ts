@@ -1,6 +1,6 @@
 import ClientOAuth2 from "client-oauth2";
 import { inject, injectable } from "inversify";
-import { EntityManager, Project, User, WP } from "op-client";
+import { EntityManager, Project, Status, User, WP } from "op-client";
 import * as vscode from "vscode";
 import TOKENS from "../../DI/tokens";
 import addCredsToUrl from "../../utils/addCredsToUrl.util";
@@ -71,6 +71,18 @@ export default class OpenProjectClientImpl implements OpenProjectClient {
       all: true,
       filters: [],
     });
+  }
+
+  public getStatuses(): Promise<Status[]> {
+    return this.entityManager.getMany<Status>(Status, {
+      pageSize: 100,
+      all: true,
+      filters: [],
+    });
+  }
+
+  save(wp: WP): Promise<WP> {
+    return this.entityManager.patch(wp);
   }
 
   private addTokenToUrl(baseUrl: string, token: string) {
