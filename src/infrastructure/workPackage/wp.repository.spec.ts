@@ -36,6 +36,20 @@ describe("WP repository test suite", () => {
     await repository.refetch();
   });
 
+  describe("save", () => {
+    it("should return client.save", async () => {
+      const wp = new WP();
+      jest.spyOn(client, "save").mockResolvedValue(wp);
+      expect(await repository.save(wp)).toEqual(wp);
+    });
+    it("should call client.save", async () => {
+      const wp = new WP();
+      jest.spyOn(client, "save");
+      await repository.save(wp);
+      expect(client.save).toHaveBeenLastCalledWith(wp);
+    });
+  });
+
   describe("findById", () => {
     it("should return wp1", () => {
       expect(repository.findById(wp1.id)).toEqual(wp1);

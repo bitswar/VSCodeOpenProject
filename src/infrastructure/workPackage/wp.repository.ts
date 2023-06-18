@@ -20,6 +20,10 @@ export default class WPRepositoryImpl implements WPRepository {
     @inject(TOKENS.opClient) private readonly _client: OpenProjectClient,
   ) {}
 
+  save(wp: WP): Promise<WP> {
+    return this._client.save(wp);
+  }
+
   findById(id: number): WP {
     const result = this._wps.find((wp) => wp.id === id);
     if (!result) throw new WPNotFoundException();

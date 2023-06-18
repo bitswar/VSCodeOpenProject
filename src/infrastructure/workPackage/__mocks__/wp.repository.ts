@@ -3,6 +3,8 @@ import WPRepository from "../wp.repository.interface";
 
 @injectable()
 export default class WPRepositoryImpl implements WPRepository {
+  save = jest.fn();
+
   findById = jest.fn();
 
   findByParentId = jest.fn();
