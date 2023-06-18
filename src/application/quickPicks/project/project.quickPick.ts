@@ -15,12 +15,10 @@ export default class ProjectQuickPick<T extends true | false> {
     this._title = title;
   }
 
-  setPickedProjects(projects: number[] | Project[]): void {
-    projects.forEach((project: number | Project) => {
+  setPickedProjects(projects: number[]): void {
+    projects.forEach((project: number) => {
       const projectItem = this._items.find(
-        (item) =>
-          item.projectId ===
-          (typeof project === "number" ? project : project.id),
+        (item) => item.projectId === project,
       );
       if (projectItem) projectItem.picked = true;
     });

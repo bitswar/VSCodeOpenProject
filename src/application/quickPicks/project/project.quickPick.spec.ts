@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import { Project } from "op-client";
 import * as vscode from "vscode";
 import ProjectQuickPick from "./project.quickPick";
+import ProjectQuickPickItem from "./project.quickPickItem";
 
 describe("ProjectQuickPick test suite", () => {
   describe("constructor", () => {
@@ -97,6 +98,16 @@ describe("ProjectQuickPick test suite", () => {
       );
       const projectIds = await qp.show();
       expect(projectIds).toEqual(pids);
+    });
+
+    it("should return one projectId if result is not array", async () => {
+      const qp = new ProjectQuickPick("title", projects, false);
+      const pid = pids[0];
+      jest
+        .spyOn(vscode.window, "showQuickPick")
+        .mockResolvedValue({ projectId: pid } as ProjectQuickPickItem);
+      const projectIds = await qp.show();
+      expect(projectIds).toEqual(pid);
     });
   });
 });
