@@ -16,7 +16,8 @@
     {
       "files": [
         "**/*.spec.ts",
-        "**/*.mock.ts"
+        "**/*.mock.ts",
+        "**/__mocks__/**/*.ts"
       ],
       "env": {
         "jest": true
@@ -24,7 +25,6 @@
       "rules": {
         "import/first": "off",
         "max-lines-per-function": "off",
-        "import/no-extraneous-dependencies": "off",
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/dot-notation": "off",
@@ -48,14 +48,12 @@
     "jsdoc"
   ],
   "rules": {
+    "import/no-extraneous-dependencies": "off",
     "quotes": [
       "error",
       "double"
     ],
-    "semi": [
-      "warn",
-      "always"
-    ],
+    "semi": "off",
     "import/extensions": [
       "error",
       "never"
@@ -111,8 +109,12 @@
       "warn",
       {
         "ignore": [
+          -1,
           0,
-          1
+          1,
+          2,
+          5,
+          10
         ]
       }
     ],
@@ -260,6 +262,9 @@
     "@typescript-eslint/brace-style": "off",
     "jsdoc/require-jsdoc": "off",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "warn"
+    "@typescript-eslint/no-unused-vars": "warn",
+    "import/no-cycle": "off",
+    "no-shadow": "off",
+    "no-undef": "off"
   }
 }

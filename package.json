@@ -3,7 +3,7 @@
   "publisher": "bitswar",
   "displayName": "OpenProject",
   "description": "OpenProject extension for VSCode",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "icon": "pictures/icon.png",
   "engines": {
     "vscode": "^1.78.0"
@@ -19,14 +19,60 @@
       {
         "command": "openproject.auth",
         "title": "Authorize",
-        "shortTitle": "Auth"
+        "shortTitle": "Auth",
+        "icon": "$(account)"
       },
       {
         "command": "openproject.refresh",
         "title": "Refresh work packages",
-        "shortTitle": "Refresh"
+        "shortTitle": "Refresh",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "openproject.setupFilter",
+        "title": "Filter work packages",
+        "shortTitle": "Filter",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "openproject.wp.setStatus",
+        "title": "Set workspace status",
+        "shortTitle": "Set status",
+        "icon": "$(tasklist)"
+      },
+      {
+        "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
+        "title": "Collapse all",
+        "shortTitle": "Collapse",
+        "icon": "$(collapse-all)"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "openproject.refresh",
+          "group": "navigation",
+          "when": "view == openproject-workspaces"
+        },
+        {
+          "command": "openproject.setupFilter",
+          "group": "navigation",
+          "when": "view == openproject-workspaces"
+        },
+        {
+          "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
+          "group": "navigation",
+          "when": "view == openproject-workspaces"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "openproject.wp.setStatus",
+          "group": "inline",
+          "when": "view == openproject-workspaces"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -113,7 +159,9 @@
   "dependencies": {
     "axios": "^1.4.0",
     "client-oauth2": "^4.3.3",
-    "op-client": "^1.4.2"
+    "inversify": "^6.0.1",
+    "op-client": "^1.4.2",
+    "reflect-metadata": "^0.1.13"
   },
   "jest": {
     "moduleFileExtensions": [

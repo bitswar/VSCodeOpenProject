@@ -1,28 +1,30 @@
+import WPStatus from "../infrastructure/openProject/wpStatus.enum";
+
 export default function getIconPathByStatus(
-  status?: string,
+  status?: WPStatus,
 ): string | undefined {
   switch (status) {
-    case "Confirmed":
+    case WPStatus.confirmed:
       return "resources/confirmed.png";
-    case "In specification":
+    case WPStatus.inSpecification:
       return "resources/in_specification.png";
-    case "Specified":
+    case WPStatus.specified:
       return "resources/specified.png";
-    case "In progress":
+    case WPStatus.inProgress:
       return "resources/developing.png";
-    case "Developed":
+    case WPStatus.developed:
       return "resources/developed.png";
-    case "In testing":
+    case WPStatus.inTesting:
       return "resources/testing.png";
-    case "Tested":
+    case WPStatus.tested:
       return "resources/tested.png";
-    case "Test failed":
+    case WPStatus.testFailed:
       return "resources/failed.png";
-    case "On hold":
+    case WPStatus.onHold:
       return "resources/hold.png";
-    case "Closed":
+    case WPStatus.closed:
       return "resources/closed.png";
-    case "Rejected":
+    case WPStatus.rejected:
       return "resources/rejected.png";
     default:
       return undefined;
