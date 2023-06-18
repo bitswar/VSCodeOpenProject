@@ -1,6 +1,7 @@
 const repositoryTokens = {
   wpRepository: Symbol.for("WPRepository"),
   projectRepository: Symbol.for("ProjectRepository"),
+  statusRepository: Symbol.for("StatusRepository"),
 };
 
 const comandTokens = {

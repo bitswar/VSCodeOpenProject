@@ -1,16 +1,16 @@
+import { Status } from "op-client";
 import { QuickPickItem } from "vscode";
-import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 
 export default class WPStatusQuickPickItem implements QuickPickItem {
   label: string;
 
   picked: boolean;
 
-  status: WPStatus;
+  status: Status;
 
-  constructor(status: WPStatus, picked = false) {
+  constructor(status: Status, picked = false) {
     this.status = status;
-    this.label = status;
+    this.label = status.body.name;
     this.picked = picked;
   }
 }

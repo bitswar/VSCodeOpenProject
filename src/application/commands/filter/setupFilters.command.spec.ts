@@ -2,19 +2,20 @@ jest.mock("../../../core/filter/project/project.filter");
 jest.mock("../../../core/filter/status/status.wpsFilter");
 jest.mock("../../../core/filter/text/text.wpsFilter");
 jest.mock("../../../infrastructure/project/project.repository");
+jest.mock("../../../infrastructure/status/status.repository");
 jest.mock("../../quickPicks/project/project.quickPick");
 jest.mock("../../quickPicks/wpStatus/wpStatus.quickPick");
 
 import { faker } from "@faker-js/faker";
-import { Project } from "op-client";
+import { Project, Status } from "op-client";
 import container from "../../../DI/container";
 import TOKENS from "../../../DI/tokens";
 import * as vscode from "../../../__mocks__/vscode";
 import ProjectsFilter from "../../../core/filter/project/project.filter.interface";
 import StatusWPsFilter from "../../../core/filter/status/status.wpsFilter.interface";
 import TextWPsFilter from "../../../core/filter/text/text.wpsFilter.interface";
-import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 import ProjectRepository from "../../../infrastructure/project/project.repository.interface";
+import StatusRepository from "../../../infrastructure/status/status.repository.interface";
 import ProjectQuickPick from "../../quickPicks/project/project.quickPick";
 import WPStatusQuickPick from "../../quickPicks/wpStatus/wpStatus.quickPick";
 import SetupFiltersCommandImpl from "./setupFilters.command";
@@ -27,6 +28,7 @@ describe("filter WPs command test suite", () => {
   const projectRepo = container.get<ProjectRepository>(
     TOKENS.projectRepository,
   );
+  const statusRepo = container.get<StatusRepository>(TOKENS.statusRepository);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -143,14 +145,16 @@ describe("filter WPs command test suite", () => {
     });
   });
   describe("setupStatusFilter", () => {
-    const statuses = Object.values(WPStatus);
+    const statuses = faker.helpers.uniqueArray(faker.number.int, 5);
 
     it("should show quickpick", async () => {
+      jest.spyOn(statusRepo, "findAll").mockReturnValue([]);
       jest.spyOn(WPStatusQuickPick.prototype, "show").mockResolvedValue([]);
       await command.setupStatusFilter();
       expect(WPStatusQuickPick.prototype.show).toHaveBeenCalled();
     });
     it("should setStatusFilter results", async () => {
+      jest.spyOn(statusRepo, "findAll").mockReturnValue([]);
       jest
         .spyOn(WPStatusQuickPick.prototype, "show")
         .mockResolvedValue(statuses);
@@ -161,7 +165,7 @@ describe("filter WPs command test suite", () => {
       expect(statusFilter.setStatusFilter).toHaveBeenLastCalledWith(statuses);
     });
     it("should setStatusFilter filter if got undefined", async () => {
-      jest.spyOn(projectRepo, "findAll").mockReturnValue([]);
+      jest.spyOn(statusRepo, "findAll").mockReturnValue([]);
       jest.spyOn(statusFilter, "getStatusFilter").mockReturnValue(statuses);
       jest
         .spyOn(WPStatusQuickPick.prototype, "show")
@@ -173,6 +177,9 @@ describe("filter WPs command test suite", () => {
       expect(statusFilter.setStatusFilter).toHaveBeenLastCalledWith(statuses);
     });
     it("should setStatusFilter statuses if got undefined and filter is undefined", async () => {
+      jest
+        .spyOn(statusRepo, "findAll")
+        .mockReturnValue(statuses.map((id) => new Status(id)));
       jest.spyOn(statusFilter, "getStatusFilter").mockReturnValue(undefined);
       jest
         .spyOn(WPStatusQuickPick.prototype, "show")

@@ -1,8 +1,7 @@
-import { WP } from "op-client";
-import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
+import { Status, WP } from "op-client";
 import Filter from "../filter.interface";
 
 export default interface StatusWPsFilter extends Filter<WP> {
-  getStatusFilter(): WPStatus[] | undefined;
-  setStatusFilter(wpTypes: WPStatus[]): void;
+  getStatusFilter(): number[] | undefined;
+  setStatusFilter(statuses: number[] | Status[]): void;
 }

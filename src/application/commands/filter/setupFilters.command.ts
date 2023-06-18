@@ -4,8 +4,8 @@ import TOKENS from "../../../DI/tokens";
 import ProjectsFilter from "../../../core/filter/project/project.filter.interface";
 import StatusWPsFilter from "../../../core/filter/status/status.wpsFilter.interface";
 import TextWPsFilter from "../../../core/filter/text/text.wpsFilter.interface";
-import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 import ProjectRepository from "../../../infrastructure/project/project.repository.interface";
+import StatusRepository from "../../../infrastructure/status/status.repository.interface";
 import ProjectQuickPick from "../../quickPicks/project/project.quickPick";
 import WPStatusQuickPick from "../../quickPicks/wpStatus/wpStatus.quickPick";
 import SetupFiltersCommand from "./setupFilters.command.interface";
@@ -24,6 +24,8 @@ export default class SetupFiltersCommandImpl implements SetupFiltersCommand {
     private readonly _statusFilter: StatusWPsFilter,
     @inject(TOKENS.projectRepository)
     private readonly _projectRepo: ProjectRepository,
+    @inject(TOKENS.statusRepository)
+    private readonly _statusRepo: StatusRepository,
   ) {}
 
   async setupFilters() {
@@ -58,30 +60,32 @@ export default class SetupFiltersCommandImpl implements SetupFiltersCommand {
   }
 
   async setupProjectFilter() {
-    const projects = this._projectRepo.findAll();
-    const oldProjectIds =
-      this._projectFilter.getProjectFilter() ?? projects.map((p) => p.id);
+    const allProjects = this._projectRepo.findAll();
+    const oldProjectsFilter =
+      this._projectFilter.getProjectFilter() ?? allProjects.map((p) => p.id);
     const quickPick = new ProjectQuickPick(
       "Select wps of which projects you want to see: ",
-      projects,
+      allProjects,
       true,
     );
-    quickPick.setPickedProjects(oldProjectIds);
-    const projectIds = await quickPick.show();
-    this._projectFilter.setProjectFilter(projectIds ?? oldProjectIds);
+    quickPick.setPickedProjects(oldProjectsFilter);
+    const pickedProjects = await quickPick.show();
+    this._projectFilter.setProjectFilter(pickedProjects ?? oldProjectsFilter);
   }
 
   async setupStatusFilter() {
-    const statuses = Object.values(WPStatus);
-    const filter = this._statusFilter.getStatusFilter();
+    const allStatuses = this._statusRepo.findAll();
+    const oldFilter =
+      this._statusFilter.getStatusFilter() ?? allStatuses.map((s) => s.id);
     const quickPick = new WPStatusQuickPick(
       "Select wps of which status you want to see: ",
+      allStatuses,
       true,
     );
-    quickPick.setPickedStatuses(filter ?? statuses);
+    quickPick.setPickedStatuses(oldFilter ?? allStatuses);
 
-    const result = await quickPick.show();
+    const pickedStatuses = await quickPick.show();
 
-    this._statusFilter.setStatusFilter(result ?? statuses);
+    this._statusFilter.setStatusFilter(pickedStatuses ?? oldFilter);
   }
 }

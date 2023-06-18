@@ -1,8 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { WP } from "op-client";
+import { Project, Status, WP } from "op-client";
 import container from "../../../DI/container";
 import TOKENS from "../../../DI/tokens";
-import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 import StatusWPsFilterImpl from "./status.wpsFilter";
 
 describe("WPs status filter test suite", () => {
@@ -21,19 +20,13 @@ describe("WPs status filter test suite", () => {
         lastName: "Nekrasov",
         login: "goodhumored",
       },
-      status: {
-        self: {
-          title: WPStatus.closed,
-        },
-      },
+      status: new Status(1),
       body: {
         description: {
           raw: "Lorem ipsum dolor amet...",
         },
       },
-      project: {
-        id: 1,
-      },
+      project: new Project(1),
     } as WP;
     const easterEggWP = {
       subject: "Lorem ipsum!",
@@ -48,14 +41,8 @@ describe("WPs status filter test suite", () => {
           raw: "Easter egg!",
         },
       },
-      project: {
-        id: 2,
-      },
-      status: {
-        self: {
-          title: WPStatus.new,
-        },
-      },
+      project: new Project(1),
+      status: new Status(2),
     } as WP;
     const dannyWP = {
       subject: "Title",
@@ -70,14 +57,8 @@ describe("WPs status filter test suite", () => {
           raw: "Lorem ipsum",
         },
       },
-      project: {
-        id: 2,
-      },
-      status: {
-        self: {
-          title: WPStatus.new,
-        },
-      },
+      project: new Project(2),
+      status: new Status(2),
     } as WP;
     const bugWP = {
       subject: "Bug!",
@@ -92,66 +73,54 @@ describe("WPs status filter test suite", () => {
           raw: faker.lorem.text(),
         },
       },
-      project: {
-        id: 0,
-      },
-      status: {
-        self: {
-          title: WPStatus.developed,
-        },
-      },
+      project: new Project(0),
+      status: new Status(3),
     } as WP;
 
     const wps: WP[] = [helloWorldWP, easterEggWP, dannyWP, bugWP];
 
-    it("should return all wps if projectFilter is undefined", () => {
+    it("should return all wps if statusFilter is undefined", () => {
       const result = filter.filter(wps);
       expect(result).toEqual(wps);
     });
-    it("should return all wps if projectFilter contains all ids", () => {
-      filter.setStatusFilter(Object.values(WPStatus));
+    it("should return all wps if statusFilter contains all ids", () => {
+      filter.setStatusFilter([new Status(1), new Status(2), new Status(3)]);
       const result = filter.filter(wps);
       expect(result).toEqual(wps);
     });
-    it("should return wps with status closed", () => {
-      filter.setStatusFilter([WPStatus.closed]);
+    it("should return wps with status 1", () => {
+      filter.setStatusFilter([new Status(1)]);
       const result = filter.filter(wps);
       expect(result).toEqual([helloWorldWP]);
     });
-    it("should return wps with status new", () => {
-      filter.setStatusFilter([WPStatus.new]);
+    it("should return wps with status 2", () => {
+      filter.setStatusFilter([new Status(2)]);
       const result = filter.filter(wps);
       expect(result).toEqual([easterEggWP, dannyWP]);
     });
-    it("should return wps with statuses new and closed", () => {
-      filter.setStatusFilter([WPStatus.new, WPStatus.closed]);
+    it("should return wps with statuses 1 and 2", () => {
+      filter.setStatusFilter([new Status(1), new Status(2)]);
       const result = filter.filter(wps);
       expect(result).toEqual(
         expect.arrayContaining([helloWorldWP, dannyWP, easterEggWP]),
       );
     });
     it("should return empty array", () => {
-      filter.setStatusFilter([WPStatus.onHold]);
+      filter.setStatusFilter([new Status(4)]);
       const result = filter.filter(wps);
       expect(result).toEqual([]);
     });
   });
 
-  describe("setProjectFilter", () => {
-    it("should set project filter", () => {
-      const projectIds = faker.helpers.uniqueArray(
-        faker.string.alpha,
-        5,
-      ) as WPStatus[];
-      filter.setStatusFilter(projectIds);
-      expect(filter.getStatusFilter()).toEqual(projectIds);
+  describe("setStatusFilter", () => {
+    it("should set status filter", () => {
+      const statusIds = faker.helpers.uniqueArray(faker.number.int, 5);
+      filter.setStatusFilter(statusIds);
+      expect(filter.getStatusFilter()).toEqual(statusIds);
     });
     it("should emit filter updated event", () => {
-      const projectIds = faker.helpers.uniqueArray(
-        faker.string.alpha,
-        5,
-      ) as WPStatus[];
-      filter.setStatusFilter(projectIds);
+      const statusIds = faker.helpers.uniqueArray(faker.number.int, 5);
+      filter.setStatusFilter(statusIds);
       expect(filter["_onFilterUpdated"].fire).toHaveBeenCalled();
     });
   });
