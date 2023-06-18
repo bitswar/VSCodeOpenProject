@@ -2,13 +2,17 @@
 
 Extension for [OpenProject](https://www.openproject.org/) - project management system.  
 
-![picture](pictures/work_packages.png)
+![work packages](pictures/work_packages.png)
 
 ## Features
 
 - Getting list of your work packages.
 - Filtering your work packages.
+![status filter](pictures/status_filter.png)
+![project filter](pictures/project_filter.png)
+![text filter](pictures/text_filter.png)
 - Setting a new status for a work package.
+![set wp status image](pictures/new_wp_status.png)
 
 ## Requirements
 
