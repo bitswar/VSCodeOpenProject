@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import TOKENS from "../../../DI/tokens";
-import OpenProjectTreeDataProvider from "../../views/openProjectTreeDataProvider.interface";
+import OpenProjectTreeDataProvider from "../../views/openProject.treeDataProvider.interface";
 import RefreshWPsCommand from "./refreshWPsCommand.interface";
 
 @injectable()
