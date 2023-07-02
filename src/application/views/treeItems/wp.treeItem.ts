@@ -6,13 +6,15 @@ import WPStatus from "../../../infrastructure/openProject/wpStatus.enum";
 import getIconPathByStatus from "../../../utils/getIconPathByStatus.util";
 
 export default class WPTreeItem implements TreeItem {
-  collapsibleState?: TreeItemCollapsibleState | undefined;
+  collapsibleState: TreeItemCollapsibleState | undefined;
 
   description?: string;
 
   iconPath?: string | Uri;
 
   label: string | TreeItemLabel;
+
+  contextValue = "wp";
 
   constructor(wp: WP) {
     this.label = this.resolveLabel(wp.id, wp.subject, wp.type?.self.title);
