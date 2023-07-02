@@ -36,12 +36,12 @@
       },
       {
         "command": "openproject.wp.setStatus",
-        "title": "Set workspace status",
+        "title": "Set workpackage status",
         "shortTitle": "Set status",
         "icon": "$(tasklist)"
       },
       {
-        "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
+        "command": "workbench.actions.treeView.openproject-workpackages.collapseAll",
         "title": "Collapse all",
         "shortTitle": "Collapse",
         "icon": "$(collapse-all)"
@@ -52,24 +52,24 @@
         {
           "command": "openproject.refresh",
           "group": "navigation",
-          "when": "view == openproject-workspaces"
+          "when": "view == openproject-workpackages"
         },
         {
           "command": "openproject.setupFilter",
           "group": "navigation",
-          "when": "view == openproject-workspaces"
+          "when": "view == openproject-workpackages"
         },
         {
-          "command": "workbench.actions.treeView.openproject-workspaces.collapseAll",
+          "command": "workbench.actions.treeView.openproject-workpackages.collapseAll",
           "group": "navigation",
-          "when": "view == openproject-workspaces"
+          "when": "view == openproject-workpackages"
         }
       ],
       "view/item/context": [
         {
           "command": "openproject.wp.setStatus",
           "group": "inline",
-          "when": "view == openproject-workspaces"
+          "when": "view == openproject-workpackages"
         }
       ]
     },
@@ -85,8 +85,8 @@
     "views": {
       "openproject": [
         {
-          "id": "openproject-workspaces",
-          "name": "Workspaces"
+          "id": "openproject-workpackages",
+          "name": "workpackages"
         }
       ]
     },
@@ -94,7 +94,7 @@
       {
         "id": "openproject-login",
         "name": "Auth",
-        "view": "openproject-workspaces",
+        "view": "openproject-workpackages",
         "type": "webview",
         "contents": "Hello! To use OpenProject features you need to authorize:\n[Auth](command:openproject.auth)",
         "when": "!openproject.authed"
