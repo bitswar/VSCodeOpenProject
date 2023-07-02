@@ -72,7 +72,7 @@ describe("activate", () => {
   it("creates expected tree view", () => {
     activate(context);
     expect(vscode.window.createTreeView).toHaveBeenCalledWith(
-      "openproject-workspaces",
+      "openproject-workpackages",
       { treeDataProvider: treeView },
     );
   });
@@ -102,7 +102,7 @@ describe("activate", () => {
         .mockImplementation((name) => name);
       activate(context);
       expect(context.subscriptions).toEqual(
-        expect.arrayContaining(["openproject-workspaces"]),
+        expect.arrayContaining(["openproject-workpackages"]),
       );
     });
   });

@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
       setupFilterCommand.setupFilters,
       setupFilterCommand,
     ),
-    vscode.window.createTreeView("openproject-workspaces", {
+    vscode.window.createTreeView("openproject-workpackages", {
       treeDataProvider: treeView,
     }),
   ];
